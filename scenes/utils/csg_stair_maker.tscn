@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://cym58huy6024l"]
+
+[ext_resource type="Script" path="res://scenes/utils/csg_stair_maker.gd" id="1_m6efe"]
+
+[node name="CsgStairMaker" type="CSGBox3D"]
+script = ExtResource("1_m6efe")
+num_stairs = 0
+
+[node name="StairsSubtractCSG" type="CSGPolygon3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.5, 0.5)
+operation = 2
+polygon = PackedVector2Array(1, 1, 0, 1, 0, 0)

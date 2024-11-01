@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://buyq0xaarcned"]
+
+[ext_resource type="Script" path="res://scenes/characters/player/player.gd" id="1_ohpxq"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5brwh"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_5nbq2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hqyb8"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_r42tm"]
+size = Vector3(0.7, 0.3, 0.7)
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_ohpxq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_5brwh")
+
+[node name="WorldModel" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Bean" type="MeshInstance3D" parent="WorldModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_5nbq2")
+
+[node name="Glasses" type="MeshInstance3D" parent="WorldModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52385, -0.252721)
+material_override = SubResource("StandardMaterial3D_hqyb8")
+mesh = SubResource("BoxMesh_r42tm")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.79, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+unique_name_in_owner = true
+cull_mask = 1048573
