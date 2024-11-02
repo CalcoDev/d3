@@ -25,6 +25,7 @@ sky = SubResource("Sky_s0qyt")
 [node name="Floor" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 use_collision = true
+collision_mask = 0
 size = Vector3(53.8701, 1, 52.6855)
 material = SubResource("StandardMaterial3D_r5nk4")
 
@@ -121,7 +122,20 @@ size = Vector3(3, 3, 1)
 num_stairs = 6
 
 [node name="Player" parent="." instance=ExtResource("2_rovfh")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.29268, -0.0373831, -9.6553)
+physics_interpolation_mode = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.29268, 1.88565, -10.6553)
+continuous_cd = true
+ground_hover_dist = 0.25
+ride_spring_strength = 100.0
+ride_spring_damper = 100.0
+max_slope_angle = 35.0
+walk_speed = 5.0
+sprint_speed = 8.0
+accel = 30.0
+max_accel_force = 50.0
+air_accel = 17.0
+air_max_accel = 30.0
+jump_height_approx = 1.5
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.838682, 0.395054, -0.374893, 0, 0.688355, 0.725374, 0.544621, 0.608358, -0.577311, 0, 31, 0)
@@ -129,3 +143,8 @@ shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_k6uwr")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 1.9, -8)
+use_collision = true
+size = Vector3(0.2, 0.2, 0.2)

@@ -1,6 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://buyq0xaarcned"]
+[gd_scene load_steps=9 format=3 uid="uid://buyq0xaarcned"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/player.gd" id="1_ohpxq"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8ga75"]
+friction = 0.0
+
+[sub_resource type="Curve" id="Curve_dlraq"]
+max_value = 2.0
+_data = [Vector2(0, 2), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_nro8q"]
+max_value = 2.0
+_data = [Vector2(0, 2), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5brwh"]
 
@@ -12,28 +25,45 @@ albedo_color = Color(0, 0, 0, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_r42tm"]
 size = Vector3(0.7, 0.3, 0.7)
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="RigidBody3D"]
+collision_layer = 2
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_8ga75")
+can_sleep = false
+contact_monitor = true
+max_contacts_reported = 8
 script = ExtResource("1_ohpxq")
+accel_factor_from_dot = SubResource("Curve_dlraq")
+max_accel_factor_from_dot = SubResource("Curve_nro8q")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_5brwh")
 
-[node name="WorldModel" type="Node3D" parent="."]
+[node name="Orientation" type="Node3D" parent="."]
 unique_name_in_owner = true
 
-[node name="Bean" type="MeshInstance3D" parent="WorldModel"]
+[node name="WorldModel" type="Node3D" parent="Orientation"]
+unique_name_in_owner = true
+
+[node name="Bean" type="MeshInstance3D" parent="Orientation/WorldModel"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_5nbq2")
 
-[node name="Glasses" type="MeshInstance3D" parent="WorldModel"]
+[node name="Glasses" type="MeshInstance3D" parent="Orientation/WorldModel"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52385, -0.252721)
 material_override = SubResource("StandardMaterial3D_hqyb8")
 mesh = SubResource("BoxMesh_r42tm")
 
-[node name="Head" type="Node3D" parent="."]
+[node name="Head" type="Node3D" parent="Orientation"]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.79, 0)
 
-[node name="Camera3D" type="Camera3D" parent="Head"]
+[node name="Camera3D" type="Camera3D" parent="Orientation/Head"]
 unique_name_in_owner = true
 cull_mask = 1048573
+current = true
+
+[node name="Node3D" type="Node3D" parent="Orientation/Head"]
