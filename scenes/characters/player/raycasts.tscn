@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=3 uid="uid://m8gtma2k35he"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_engkr"]
+size = Vector3(0.75, 0.2, 0.75)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_x36d4"]
+size = Vector3(0.8, 0.2, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dd6g0"]
+size = Vector3(0.8, 1.8, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5vm70"]
+size = Vector3(0.8, 1.8, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tmpcd"]
+size = Vector3(0.2, 1.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e32f3"]
+size = Vector3(0.2, 1.8, 0.8)
+
+[node name="Raycasts" type="Node3D"]
+
+[node name="Ground" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+shape = SubResource("BoxShape3D_engkr")
+target_position = Vector3(0, -0.1, 0)
+margin = 0.25
+
+[node name="Ceiling" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.8, 0)
+shape = SubResource("BoxShape3D_x36d4")
+target_position = Vector3(0, 0.1, 0)
+
+[node name="Wall_Front" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -0.3)
+shape = SubResource("BoxShape3D_dd6g0")
+target_position = Vector3(0, 0, -0.1)
+
+[node name="Wall_Back" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.3)
+shape = SubResource("BoxShape3D_5vm70")
+target_position = Vector3(0, 0, 0.1)
+
+[node name="Wall_Right" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.9, 0)
+shape = SubResource("BoxShape3D_tmpcd")
+target_position = Vector3(0.1, 0, 0)
+
+[node name="Wall_Left" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.9, 0)
+shape = SubResource("BoxShape3D_e32f3")
+target_position = Vector3(0.1, 0, 0)

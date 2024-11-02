@@ -164,7 +164,7 @@ use_collision = true
 size = Vector3(3, 3, 1)
 num_stairs = 6
 
-[node name="Player" parent="." instance=ExtResource("2_rovfh")]
+[node name="Player" parent="." node_paths=PackedStringArray("_ground_raycasts") instance=ExtResource("2_rovfh")]
 physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.29268, 1.88565, -10.6553)
 continuous_cd = true
@@ -179,6 +179,7 @@ max_accel_force = 50.0
 air_accel = 17.0
 air_max_accel = 30.0
 jump_height_approx = 1.5
+_ground_raycasts = []
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.838682, 0.395054, -0.374893, 0, 0.688355, 0.725374, 0.544621, 0.608358, -0.577311, 0, 31, 0)

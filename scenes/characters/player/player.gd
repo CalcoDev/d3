@@ -81,6 +81,16 @@ var _jump_descent: bool = false
 var _wish_dir := Vector3.ZERO
 var _wish_vel := Vector3.ZERO
 
+@export_group("wtf man")
+@export var _ground_raycasts: Array[RayCast3D] = []
+
+# @onready var _ground_cast: ShapeCast3D = $"Orientation/Raycasts/Ground"
+# @onready var _ceiling_cast: ShapeCast3D = $"Orientation/Raycasts/Ceiling"
+# @onready var _wall_front_cast: ShapeCast3D = $"Orientation/Raycasts/Wall_Front"
+# @onready var _wall_back_cast: ShapeCast3D = $"Orientation/Raycasts/Wall_Back"
+# @onready var _wall_left_cast: ShapeCast3D = $"Orientation/Raycasts/Wall_Left"
+# @onready var _wall_right_cast: ShapeCast3D = $"Orientation/Raycasts/Wall_Right"
+
 func _ready() -> void:
 	# TODO(calco): Remove in prod
 	_camera.current = false
@@ -130,23 +140,68 @@ func _process(delta: float) -> void:
 		if right:
 			target_pos.x = sin(bob_time * BOB_FREQ + BOB_SHIFT) * BOB_AMOUNT.x
 		else:
-			target_pos.x = lerpf(target_pos.x, 0.0, delta * BOB_RESET_SPEED)
+# 			target_pos.x = lerpf(target_pos.x, 0.0, delta * BOB_RESET_SPEED)
+			target_pos.x = move_toward(target_pos.x, 0.0, delta * BOB_RESET_SPEED)
 		# Lerp back to 0 bob
 		if not forward and not right:
-			target_pos.y = lerpf(target_pos.y, 0.0, delta * BOB_RESET_SPEED)
+# 			target_pos.y = lerpf(target_pos.y, 0.0, delta * BOB_RESET_SPEED)
+			target_pos.y = move_toward(target_pos.y, 0.0, delta * BOB_RESET_SPEED)
 			bob_time = asin(target_pos.y / BOB_AMOUNT.y)
 		# Update bob
 		if forward or right:
 			bob_time += delta * BOB_FREQ
+# 		print(target_pos)
 		_camera.position = _camera.position.lerp(target_pos, delta * BOB_MOVE_SPEED)
 
+
 var _rb: PhysicsDirectBodyState3D
-# rigidbody cannot sleep, therefore this is equiavlent to physics process
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	_rb = state
 	var delta := get_physics_process_delta_time()
 	
-	# TODO(calco): store ground and slope addittively
+	# handle groundedness and checks
+# 	var f := global_position
+
+	_handle_raycasts()
+	
+	if not _was_grounded and _is_grounded:
+		_wish_vel = _wish_vel.slide(_floor_normal)
+		_is_jumping = false
+	if _was_grounded and not _is_grounded:
+		_wish_vel = _wish_vel.slide(Vector3.UP)
+
+	# Jump
+	if _is_grounded or _was_grounded:
+		_coyote_buffer_timer = COYOTE_BUFFER_TIME
+	if _is_jumping and _jump_inp_released:
+		linear_velocity.y *= 0.75
+		_jump_inp_released = false
+		_jump_descent = true
+	if _is_jumping and _jump_descent and linear_velocity.y > 0.0:
+		apply_force(Vector3.DOWN * jump_cancel_rate)
+	if _coyote_buffer_timer > 0.0 and _jump_buffer_timer > 0.0:
+		_jump_buffer_timer = 0.0
+		_coyote_buffer_timer = 0.0
+		var gravity_str: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+		var force := sqrt(jump_height_approx * gravity_str * 2.5) * mass
+		linear_velocity.y = 0.0
+		apply_impulse(Vector3.UP * force)
+		_is_jumping = true
+		_jump_inp_released = false
+		_jump_descent = false
+	
+	# Movement
+	if _is_grounded:
+		_handle_ground_movement(delta)
+	else:
+		if _is_touching_ground_but_maybe_not_floor:
+			return
+		_handle_air_movement(delta)
+	
+func _physics_process(_delta: float) -> void:
+	pass
+
+func _handle_raycasts() -> void:
 	_was_grounded = _is_grounded
 	_is_grounded = false
 	_is_on_slope = false
@@ -156,11 +211,11 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	
 	var colls: Dictionary = {}
 	
-	var col_cnt = state.get_contact_count()
+	var col_cnt = _rb.get_contact_count()
 	for cidx in col_cnt:
-		var obj := state.get_contact_collider_object(cidx)
-		var local_pos := to_local(state.get_contact_local_position(cidx))
-		var normal := state.get_contact_local_normal(cidx)
+		var obj := _rb.get_contact_collider_object(cidx)
+		var local_pos := to_local(_rb.get_contact_local_position(cidx))
+		var normal := _rb.get_contact_local_normal(cidx)
 		if obj.get_instance_id() not in colls:
 			colls[obj] = {
 				"positions": [],
@@ -170,47 +225,38 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		colls[obj]["positions"].append(local_pos)
 		colls[obj]["normals"].append(normal)
 	
-	print("-=-=-=-=-")
+	print("")
 	for obj_id in colls:
 		var obj_dict: Dictionary = colls[obj_id]
-		var obj := state.get_contact_collider_object(obj_dict["idx"])
+		var obj := _rb.get_contact_collider_object(obj_dict["idx"])
 		var layer = obj.get("collision_layer")
 		if layer == null or layer & ground_layers == 0:
 			continue
+		print("Checking obj: ", obj)
 		var positions = colls[obj]["positions"]
 		var normals = colls[obj]["normals"]
 		
 		var average_normal := Vector3.ZERO
 		
-		# unreliable
-# 		var min_y: float = 999.0
-# 		var max_y: float = -999.0
-		
 		var is_not_floor_ramp := false
-		var is_floor := true
-		var is_wall := true
-		var is_ceiling := true
+		var is_floor := false
+		var is_wall := false
+		var is_ceiling := false
 		for i in range(positions.size()):
 			var pos: Vector3 = positions[i]
 			var normal: Vector3 = normals[i]
 			average_normal += normal
-# 			min_y = minf(min_y, pos.y)
-# 			max_y = maxf(max_y, pos.y)
-			if pos.y > 0.05:
-				is_floor = false
-				is_not_floor_ramp = false
-			if pos.y < 0.95:
-				is_ceiling = false
-# 			if abs(pos.y) < 0.1:  # Side collisions will have a near-zero y offset
-# 				is_wall = false
-			if not _is_floor(normal):
-				if is_floor:
+			if pos.y < 0.1:
+				if _is_floor(normal):
+					is_floor = true
+				else:
 					is_not_floor_ramp = true
-				is_floor = false
-			if not _is_wall(normal):
-				is_wall = false
-			if not _is_ceiling(normal):
-				is_ceiling = false
+			if pos.y > 0.95:
+				is_ceiling = true
+			if _is_wall(normal):
+				is_wall = true
+			if _is_ceiling(normal):
+				is_ceiling = true
 		if is_ceiling:
 			is_wall = false
 			is_floor = false
@@ -235,7 +281,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 # 			if min_y < 0.05 and max_y < max_step_height:
 # 				print("should be skippable!")
 		if is_ceiling:
-# 			print("Ceiling detected with object:", obj)
+			print("Ceiling detected with object:", obj)
 			_is_touching_ceiling = true
 			_ceiling_normal = average_normal
 	
@@ -253,57 +299,41 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 
 # 	print(_is_touching_wall, " ", _wall_normal)
 	
-	# Entered ground
-	if not _was_grounded and _is_grounded:
-# 		_wish_vel = (_wish_vel * Vector3(1,0,1)).normalized()
-		_wish_vel = _wish_vel.slide(_floor_normal)
-		_is_jumping = false
-	#Exited ground
-	if _was_grounded and not _is_grounded:
-		_wish_vel = _wish_vel.slide(Vector3.UP)
-
-	if _is_grounded or _was_grounded:
-		_coyote_buffer_timer = COYOTE_BUFFER_TIME
-
-	# Jump cut
-	if _is_jumping and _jump_inp_released:
-		linear_velocity.y *= 0.75
-		_jump_inp_released = false
-		_jump_descent = true
-	if _is_jumping and _jump_descent and linear_velocity.y > 0.0:
-		apply_force(Vector3.DOWN * jump_cancel_rate)
-
-	# Jump
-	if _coyote_buffer_timer > 0.0 and _jump_buffer_timer > 0.0:
-		_jump_buffer_timer = 0.0
-		_coyote_buffer_timer = 0.0
-		var gravity_str: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-		var force := sqrt(jump_height_approx * gravity_str * 2.5) * mass
-		linear_velocity.y = 0.0
-		apply_impulse(Vector3.UP * force)
-		_is_jumping = true
-		_jump_inp_released = false
-		_jump_descent = false
-# 		print("-=-=-=-=- jumped -=-=-=-=-=")
-# 	print(linear_velocity.y)
-	
-	# Movement
-	if _is_grounded:
-		_handle_ground_movement(delta)
-	else:
-		if _is_touching_ground_but_maybe_not_floor:
-			return
-		_handle_air_movement(delta)
-	
-# 	_handle_stairs()
-	
-func _physics_process(_delta: float) -> void:
-	pass
+# 	_was_grounded = _is_grounded
+# 	_is_grounded = false
+# 	_is_on_slope = false
+# 	_is_touching_ground_but_maybe_not_floor = false
+# 	_is_touching_wall = false
+# 	_is_touching_ceiling = false
+# 	for r in _ground_raycasts:
+# 		r.force_raycast_update()
+# 		if r.is_colliding():
+# 			var n := r.get_collision_normal()
+# 			_is_touching_ground_but_maybe_not_floor = true
+# 			if _is_floor(n):
+# 				_is_grounded = true
+# 				_floor_normal = n
+# 				_floor_angle = Vector3.UP.angle_to(n)
+# 				if _floor_angle > deg_to_rad(0.01):
+# 					_is_on_slope = true
+# 	print(_floor_normal)
+			
+# 	_was_grounded = _is_grounded
+# 	_is_grounded = _ground_cast.is_colliding()
+# 	
+# 	print(_ground_cast.is_colliding())
+# 	
+# 	_is_on_slope = false
+# 	
+# 	# slopes
+# 	var cnt = _ground_cast.get_collision_count()
+# 	var avg_norm := Vector3.ZERO
+# 	for idx in cnt:
+# 		var n := _ground_cast.get_collision_normal(idx)
+# 		avg_norm += n
+# 	avg_norm = avg_norm.normalized()
 
 func _handle_ground_movement(delta: float) -> void:
-# 	var unit_vel := Vector3.ZERO
-# 	if abs(linear_velocity.x) + abs(linear_velocity.z) > 0.0:
-# 		unit_vel = (linear_velocity*Vector3(1,0,1)).normalized()
 	var unit_vel := linear_velocity.normalized()
 	var vel_dot := _wish_dir.dot(unit_vel)
 	var curr_accel := accel * accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
@@ -321,7 +351,6 @@ func _handle_ground_movement(delta: float) -> void:
 	# stair stuff
 # 	print("groinud momemem")
 	if _is_touching_wall and false:
-# 		print("wall")
 		const BOTTOM_RAYCAST_LEN: float = 0.5 + 0.2
 		const TOP_RAYCAST_LEN: float = 0.5 + 0.25
 		var from := global_position + Vector3.UP * 0.025
@@ -334,7 +363,7 @@ func _handle_ground_movement(delta: float) -> void:
 			if not res:
 # 				global_position.y += max_step_height + 0.1
 				var motion_res := PhysicsTestMotionResult3D.new()
-				
+# 				
 				var from_transf = global_transform.translated(Vector3.UP * (max_step_height + 0.1))
 				if _run_body_test_motion(from_transf, Vector3.DOWN * (max_step_height + 0.2), motion_res):
 # 					_rb.transform = from_transf.translated(motion_res.get_travel())
@@ -351,16 +380,6 @@ func _handle_ground_movement(delta: float) -> void:
 	apply_force(required_force)
 
 func _handle_air_movement(delta: float) -> void:
-# 	print("air")
-# 	var gravity_str: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-# 	var gravity_vec: Vector3 = ProjectSettings.get_setting("physics/3d/default_gravity_vector")
-# 	if linear_velocity.y < max_fall:
-# 		var gravity_force := gravity_vec * gravity_str
-# 		apply_force(gravity_force)
-# 	elif linear_velocity.y > max_fall:
-# 		linear_velocity.y = max_fall
-
-	# Actual movement
 	var unit_vel := Vector3.ZERO
 	if abs(linear_velocity.x) + abs(linear_velocity.z) > 0.0:
 		unit_vel = (linear_velocity * Vector3(1,0,1)).normalized()
@@ -370,48 +389,11 @@ func _handle_air_movement(delta: float) -> void:
 	var wish_vel := _wish_dir * _target_speed
 	_wish_vel = _wish_vel.move_toward(wish_vel, curr_accel * delta)
 
-# 	var vel = linear_velocity
-# 	var cx = (_wish_vel.x > 0.0 and vel.x < _wish_vel.x) or (_wish_vel.x < 0.0 and vel.x > _wish_vel.x)
-# 	var cz = (_wish_vel.z > 0.0 and vel.z < _wish_vel.z) or (_wish_vel.z < 0.0 and vel.z > _wish_vel.z)
-# 	var air_force = Vector3(
-# 		_wish_vel.x if cx else 0.0,
-# 		_wish_vel.y,
-# 		_wish_vel.z if cz else 0.0
-# 	) * air_force_mult
-# 	apply_force(air_force)
-# 	var vel0 = linear_velocity * Vector3(1,0,1)
-# 	if _wish_dir.length_squared() > 0.01 and vel0.normalized().dot(_wish_dir) < 0.99:
-# 		var v = abs(_orientation.transform.basis.z.normalized().dot(_wish_vel.normalized()))
-# 		var t = max(walk_speed * delta, vel0.length()) * _wish_dir
-# 		var f = t - vel0
-# 		var mult = (1.0 + 0.25 * v) * air_steer_move_mult
-# 		apply_force(f * mult)
-
-
 	if _wish_dir.length_squared() > 0.01:
 		var required_force := (_wish_vel - linear_velocity*Vector3(1,0,1)) / delta
 		var max_accel := air_max_accel * max_accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
 		required_force = required_force.limit_length(max_accel)
-		
-# 		# try to not stop that much if going forwards
-# 		var dot_scale = _orientation.transform.basis.z.dot(unit_vel)
-# 		print(dot_scale)
-		
-# 		print("air applies: ", required_force)
 		apply_force(required_force)
-
-# func _old_handle_stairs() -> void:
-# 	var did_snap := false
-# 	var was_on_floor_last_frame := (Engine.get_process_frames() - _last_frame_was_on_floor) == 1
-# 	if not _is_grounded and linear_velocity.y <= 0.0 and (was_on_floor_last_frame or _snapped_to_stairs_last_frame):
-# 		var body_test_result := PhysicsTestMotionResult3D.new()
-# 		if _run_body_test_motion(self.global_transform, Vector3.DOWN  * -max_step_height, body_test_result):
-# 			var translate_y = body_test_result.get_travel().y
-# 			position.y += translate_y
-# 			# TODO(calco):
-# 			# should force collision check and stuff to ensure still grounded after all of this
-# 			did_snap = true
-# 	_snapped_to_stairs_last_frame = did_snap
 
 func _handle_hover(_delta: float) -> void:
 	var vel := linear_velocity

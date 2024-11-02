@@ -16,7 +16,7 @@ max_value = 2.0
 _data = [Vector2(0, 2), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_6j64j"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_3qy4c"]
 size = Vector3(0.8, 1.8, 0.8)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_5nbq2"]
@@ -35,14 +35,14 @@ axis_lock_angular_z = true
 physics_material_override = SubResource("PhysicsMaterial_8ga75")
 can_sleep = false
 contact_monitor = true
-max_contacts_reported = 8
+max_contacts_reported = 32
 script = ExtResource("1_ohpxq")
 accel_factor_from_dot = SubResource("Curve_dlraq")
 max_accel_factor_from_dot = SubResource("Curve_nro8q")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-shape = SubResource("BoxShape3D_6j64j")
+shape = SubResource("BoxShape3D_3qy4c")
 
 [node name="Orientation" type="Node3D" parent="."]
 unique_name_in_owner = true
@@ -69,5 +69,33 @@ cull_mask = 1048573
 current = true
 
 [node name="Node3D" type="Node3D" parent="Orientation/Head"]
+
+[node name="Raycasts" type="Node3D" parent="Orientation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+
+[node name="Ground" type="RayCast3D" parent="Orientation/Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8, 0)
+target_position = Vector3(0, -0.25, 0)
+hit_from_inside = true
+
+[node name="Ground2" type="RayCast3D" parent="Orientation/Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.8, 0.2)
+target_position = Vector3(0, -0.25, 0)
+hit_from_inside = true
+
+[node name="Ground3" type="RayCast3D" parent="Orientation/Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, -0.8, 0.2)
+target_position = Vector3(0, -0.25, 0)
+hit_from_inside = true
+
+[node name="Ground4" type="RayCast3D" parent="Orientation/Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, -0.8, -0.2)
+target_position = Vector3(0, -0.25, 0)
+hit_from_inside = true
+
+[node name="Ground5" type="RayCast3D" parent="Orientation/Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.8, -0.2)
+target_position = Vector3(0, -0.25, 0)
+hit_from_inside = true
 
 [node name="PlayerHUD" parent="." instance=ExtResource("2_givcc")]
