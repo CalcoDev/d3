@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://buyq0xaarcned"]
+[gd_scene load_steps=10 format=3 uid="uid://buyq0xaarcned"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/player.gd" id="1_ohpxq"]
+[ext_resource type="PackedScene" uid="uid://q7m5oaiqe3ca" path="res://scenes/characters/player/player_hud.tscn" id="2_givcc"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8ga75"]
 friction = 0.0
@@ -15,7 +16,8 @@ max_value = 2.0
 _data = [Vector2(0, 2), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5brwh"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_6j64j"]
+size = Vector3(0.8, 1.8, 0.8)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_5nbq2"]
 
@@ -39,8 +41,8 @@ accel_factor_from_dot = SubResource("Curve_dlraq")
 max_accel_factor_from_dot = SubResource("Curve_nro8q")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_5brwh")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("BoxShape3D_6j64j")
 
 [node name="Orientation" type="Node3D" parent="."]
 unique_name_in_owner = true
@@ -67,3 +69,5 @@ cull_mask = 1048573
 current = true
 
 [node name="Node3D" type="Node3D" parent="Orientation/Head"]
+
+[node name="PlayerHUD" parent="." instance=ExtResource("2_givcc")]

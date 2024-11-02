@@ -6,6 +6,10 @@ extends CSGBox3D
 var _cur_num_stairs = -1
 var _cur_size : Vector3
 
+func _ready() -> void:
+	if not Engine.is_editor_hint():
+		$StairsSubtractCSG.material = self.material
+
 func make_stairs():
 	#if not Engine.is_editor_hint():
 		#return

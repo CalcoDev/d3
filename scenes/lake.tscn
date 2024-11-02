@@ -1,11 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://cmhod6gddvbhw"]
+[gd_scene load_steps=10 format=3 uid="uid://cmhod6gddvbhw"]
 
 [ext_resource type="Texture2D" uid="uid://ce4okpev2mgrg" path="res://addons/kenney_prototype_textures/dark/texture_01.png" id="1_4fxah"]
 [ext_resource type="PackedScene" uid="uid://cym58huy6024l" path="res://scenes/utils/csg_stair_maker.tscn" id="2_nlqvs"]
 [ext_resource type="PackedScene" uid="uid://buyq0xaarcned" path="res://scenes/characters/player/player.tscn" id="2_rovfh"]
+[ext_resource type="Texture2D" uid="uid://c63sx33rlk8le" path="res://addons/kenney_prototype_textures/purple/texture_01.png" id="3_8n1jx"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r5nk4"]
 albedo_texture = ExtResource("1_4fxah")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ckurs"]
+albedo_texture = ExtResource("3_8n1jx")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
@@ -53,6 +59,36 @@ size = Vector3(2, 2, 2)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1, -13)
 use_collision = true
 size = Vector3(2, 2, 2)
+
+[node name="Box7" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.1, -6)
+use_collision = true
+size = Vector3(0.2, 0.2, 2)
+
+[node name="Box9" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.1, -6)
+use_collision = true
+size = Vector3(0.2, 0.2, 2)
+
+[node name="Box10" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.1, -3)
+use_collision = true
+size = Vector3(0.2, 0.2, 2)
+
+[node name="Box11" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.1, -3)
+use_collision = true
+size = Vector3(0.2, 0.2, 2)
+
+[node name="Box12" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.1, -3)
+use_collision = true
+size = Vector3(0.2, 0.2, 2)
+
+[node name="Box13" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.1, -3)
+use_collision = true
+size = Vector3(0.2, 0.2, 2)
 
 [node name="Box6" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, -18)
@@ -103,6 +139,13 @@ use_collision = true
 size = Vector3(3, 1, 1)
 num_stairs = 6
 
+[node name="CsgStairMaker9" parent="Level" instance=ExtResource("2_nlqvs")]
+transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, 1, 0, -1.31134e-07, -5.429, 1.5, 4.0117)
+use_collision = true
+size = Vector3(6, 3, 4)
+material = SubResource("StandardMaterial3D_ckurs")
+num_stairs = 11
+
 [node name="CsgStairMaker6" parent="Level" instance=ExtResource("2_nlqvs")]
 transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, 1, 0, -1.31134e-07, -3.429, 0.864899, -10.4883)
 use_collision = true
@@ -148,3 +191,6 @@ environment = SubResource("Environment_k6uwr")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 1.9, -8)
 use_collision = true
 size = Vector3(0.2, 0.2, 0.2)
+
+[node name="Marker3D" type="Marker3D" parent="."]
+transform = Transform3D(-0.99997, 0.000282431, 0.00770307, 0, 0.999329, -0.0366402, -0.00770824, -0.0366391, -0.999299, -6.25113, 0.289975, 0.926834)
