@@ -40,13 +40,15 @@ var _target_speed: float = 0.0
 var _is_touching_wall: bool = false
 var _wall_normal: Vector3 = Vector3.ZERO
 
+var _wall_touch_relative_pos: Vector3 = Vector3.ZERO
+
 var _touched_wall_with_velocity: Vector3 = Vector3.ZERO
 
 var _is_touching_ceiling: bool = false
 var _ceiling_normal: Vector3 = Vector3.ZERO
 
 # Bobbing
-const BOB_AMOUNT: Vector2 = Vector2(0.1, 0.2) 
+const BOB_AMOUNT: Vector2 = Vector2(0.06, 0.15) 
 const BOB_FREQ: float = 2.7
 const BOB_RESET_SPEED: float = 2.5
 const BOB_MOVE_SPEED: float = 10.0
@@ -72,11 +74,22 @@ var _jump_descent: bool = false
 @onready var _camera: Camera3D = %Camera3D
 @onready var _head: Node3D = %Head
 @onready var _world_model: Node3D = %WorldModel
+@onready var _camera_offsetter: Node3D = %CameraOffsetter
 
 var _wish_dir := Vector3.ZERO
 var _wish_vel := Vector3.ZERO
 
 var _prev_velocity: Vector3 = Vector3.ZERO
+
+# stairs
+var _snapped_down_last_frame: bool = false
+var _snapped_up_last_frame: bool = false
+var _stair_snap_camera_offset: Vector3 = Vector3.ZERO
+
+# Interaction stuff
+@export_group("Interactions")
+@export var interaction_reach: float = 3.0
+@onready var _player_interaction_component: PlayerInteractionComponent = %PlayerInteractionComponent
 
 func _ready() -> void:
 	# TODO(calco): Remove in prod
@@ -84,6 +97,9 @@ func _ready() -> void:
 	for child: VisualInstance3D in _world_model.find_children("*", "VisualInstance3D"):
 		child.set_layer_mask_value(1, false)
 		child.set_layer_mask_value(2, true)
+	
+	_player_interaction_component.exclude_player(get_rid())
+	_player_interaction_component.interaction_reach = interaction_reach
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -120,25 +136,23 @@ func _process(delta: float) -> void:
 	if _is_grounded:
 		var forward = abs(abs_dir.z) > 0.0
 		var right = abs(abs_dir.x) > 0.0
-		# Y Axis bob
 		if forward or right:
 			target_pos.y = sin(bob_time * BOB_FREQ) * BOB_AMOUNT.y
-		# X Axis bob
 		if right:
 			target_pos.x = sin(bob_time * BOB_FREQ + BOB_SHIFT) * BOB_AMOUNT.x
 		else:
-# 			target_pos.x = lerpf(target_pos.x, 0.0, delta * BOB_RESET_SPEED)
 			target_pos.x = move_toward(target_pos.x, 0.0, delta * BOB_RESET_SPEED)
-		# Lerp back to 0 bob
 		if not forward and not right:
-# 			target_pos.y = lerpf(target_pos.y, 0.0, delta * BOB_RESET_SPEED)
 			target_pos.y = move_toward(target_pos.y, 0.0, delta * BOB_RESET_SPEED)
 			bob_time = asin(target_pos.y / BOB_AMOUNT.y)
-		# Update bob
 		if forward or right:
 			bob_time += delta * BOB_FREQ
 		_camera.position = _camera.position.lerp(target_pos, delta * BOB_MOVE_SPEED)
-
+		
+	# Handle stair snap smoothing
+	if _stair_snap_camera_offset.length_squared() > 0.001:
+		_camera_offsetter.position = _stair_snap_camera_offset
+		_stair_snap_camera_offset = _stair_snap_camera_offset.lerp(Vector3.ZERO, delta * 15.0)
 
 var _rb: PhysicsDirectBodyState3D
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
@@ -172,6 +186,16 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		_is_jumping = true
 		_jump_inp_released = false
 		_jump_descent = false
+	
+	# Stair snapping
+	if not _is_grounded and linear_velocity.y < 0.0 and (_was_grounded or _snapped_down_last_frame):
+		var test := PhysicsTestMotionResult3D.new()
+		if _run_body_test_motion(global_transform, Vector3.DOWN * max_step_height, test):
+			global_position.y += test.get_travel().y
+			_stair_snap_camera_offset.y += -test.get_travel().y
+			_snapped_down_last_frame = true
+	else:
+		_snapped_down_last_frame = false
 	
 	# Movement
 	if _is_grounded:
@@ -215,12 +239,10 @@ func _handle_raycasts() -> void:
 				is_floor = true
 			else:
 				is_not_floor_ramp = true
-		if pos.y > 0.95:
+		if pos.y > 0.95 and _is_ceiling(normal):
 			is_ceiling = true
 		if _is_wall(normal):
 			is_wall = true
-		if _is_ceiling(normal):
-			is_ceiling = true
 		if is_ceiling:
 			is_wall = false
 			is_floor = false
@@ -236,6 +258,7 @@ func _handle_raycasts() -> void:
 		if is_wall:
 			_is_touching_wall = true
 			_touched_wall_with_velocity = _prev_velocity
+			_wall_touch_relative_pos = local_pos
 			_wall_normal = normal
 		if is_ceiling:
 			_is_touching_ceiling = true
@@ -258,8 +281,17 @@ func _handle_ground_movement(delta: float) -> void:
 	
 	# stair stuff
 	if _is_touching_wall:
-		const BOTTOM_RAYCAST_LEN: float = 0.5 + 0.4
-		const TOP_RAYCAST_LEN: float = 0.5 + 0.4
+		const BOTTOM_RAYCAST_LEN: float = 0.4 + 0.3
+		const TOP_RAYCAST_LEN: float = 0.4 + 0.3
+		# have to rewrite this using shape casts or test motion body lmfao
+# 		var from = global_transform.translated(Vector3.UP * 0.025)
+# 		var motion = slope_dir * BOTTOM_RAYCAST_LEN
+# 		var res := PhysicsTestMotionResult3D.new()
+# 		if _run_body_test_motion(from, motion, res):
+# 			from = from.translated(Vector3.UP * (max_step_height - 0.0125))
+# 			motion = slope_dir * TOP_RAYCAST_LEN
+# 			pass
+
 		var from := global_position + Vector3.UP * 0.025
 		var to := from + slope_dir * BOTTOM_RAYCAST_LEN
 		var res := raycast(from, to, 1)
@@ -269,6 +301,7 @@ func _handle_ground_movement(delta: float) -> void:
 			var bottom_p := res["position"] as Vector3
 			res = raycast(from, to, 1)
 			if not res:
+				var init_pos = global_position
 				global_position.y += max_step_height + 0.1
 				var ll := (bottom_p - global_position).length()
 				var l := slope_dir * (ll - 0.5)
@@ -278,11 +311,15 @@ func _handle_ground_movement(delta: float) -> void:
 				if _run_body_test_motion(fr, Vector3.DOWN * (max_step_height + 0.25), motion_res):
 					global_position += motion_res.get_travel()
 					linear_velocity = _touched_wall_with_velocity
+					var diff = init_pos - global_position
+					_stair_snap_camera_offset += Vector3.UP * diff
+					_snapped_up_last_frame = true
+	else:
+		_snapped_up_last_frame = false
 	
 	var required_force := (_wish_vel - linear_velocity) / delta
 	var max_accel := max_accel_force * max_accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
 	required_force = required_force.limit_length(max_accel)
-	
 	apply_force(required_force)
 
 func _handle_air_movement(delta: float) -> void:
