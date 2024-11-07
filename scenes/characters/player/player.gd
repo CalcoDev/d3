@@ -75,6 +75,7 @@ var _jump_descent: bool = false
 @onready var _head: Node3D = %Head
 @onready var _world_model: Node3D = %WorldModel
 @onready var _camera_offsetter: Node3D = %CameraOffsetter
+@onready var _collision_shape: CollisionShape3D = %CollisionShape3D
 
 var _wish_dir := Vector3.ZERO
 var _wish_vel := Vector3.ZERO
@@ -90,6 +91,13 @@ var _stair_snap_camera_offset: Vector3 = Vector3.ZERO
 @export_group("Interactions")
 @export var interaction_reach: float = 3.0
 @onready var _player_interaction_component: PlayerInteractionComponent = %PlayerInteractionComponent
+
+# Crouching
+@export_group("Crouching")
+@export var crouch_height_offset: float = 0.3
+var _is_crouching: bool = false
+
+# Wall Jumping / Sliding
 
 func _ready() -> void:
 	# TODO(calco): Remove in prod
@@ -130,6 +138,28 @@ func _process(delta: float) -> void:
 		
 	if _is_jumping and Input.is_action_just_released("jump"):
 		_jump_inp_released = true
+	
+	# Crouching
+#     print(_can_uncrouch())
+	if Input.is_action_pressed("crouch") and not _is_crouching:
+		_is_crouching = true
+		_head.position = Vector3.DOWN * crouch_height_offset
+		if _collision_shape.shape is BoxShape3D:
+			_collision_shape.shape.size.y -= crouch_height_offset
+			_collision_shape.position.y -= crouch_height_offset * 0.5
+		elif _collision_shape.shape is CylinderShape3D or _collision_shape.shape is CapsuleShape3D:
+			_collision_shape.shape.height -= crouch_height_offset
+			_collision_shape.position.y -= crouch_height_offset * 0.5
+	elif not Input.is_action_pressed("crouch") and _is_crouching and _can_uncrouch():
+		_is_crouching = false
+		_head.position = Vector3.ZERO
+		# TODO(calco): Maybe just set to 0?
+		if _collision_shape.shape is BoxShape3D:
+			_collision_shape.shape.size.y += crouch_height_offset
+			_collision_shape.position.y += crouch_height_offset * 0.5
+		elif _collision_shape.shape is CylinderShape3D or _collision_shape.shape is CapsuleShape3D:
+			_collision_shape.shape.height += crouch_height_offset
+			_collision_shape.position.y += crouch_height_offset * 0.5
 	
 	# View bobbing effect:
 	var target_pos := _camera.position
@@ -205,7 +235,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		if _is_touching_ground_but_maybe_not_floor:
 			return
 		_handle_air_movement(delta)
-	
+	   
 	_prev_velocity = linear_velocity
 	
 func _physics_process(_delta: float) -> void:
@@ -339,10 +369,19 @@ func _handle_air_movement(delta: float) -> void:
 		apply_force(required_force)
 
 func raycast(from: Vector3, to: Vector3, mask: int = 4294967295, exclude: Array[RID] = []) -> Dictionary:
-	var state = get_world_3d().direct_space_state
-	var ray = PhysicsRayQueryParameters3D.create(from, to, mask, exclude)
+	var state := get_world_3d().direct_space_state
+	var ray := PhysicsRayQueryParameters3D.create(from, to, mask, exclude)
 	ray.hit_from_inside = true
 	return state.intersect_ray(ray)
+
+func _can_uncrouch() -> bool:
+	# NOTE(calco): For some reason this does not work. 0 idea why lmfao
+# 	var res = PhysicsTestMotionResult3D.new() 
+# 	var i = _run_body_test_motion(global_transform.translated(Vector3.UP * 1.01), Vector3.UP, res)
+	var from := global_position + Vector3.UP * (2.0 - crouch_height_offset)
+	var to := global_position + Vector3.UP * 2.0
+	var res := raycast(from, to, 1 | 4, [])
+	return res == {}
 
 func _run_body_test_motion(from: Transform3D, motion: Vector3, result: PhysicsTestMotionResult3D = null) -> bool:
 	if not result:

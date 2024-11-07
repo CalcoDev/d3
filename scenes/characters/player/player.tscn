@@ -45,6 +45,7 @@ accel_factor_from_dot = SubResource("Curve_dlraq")
 max_accel_factor_from_dot = SubResource("Curve_nro8q")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("BoxShape3D_3qy4c")
 
@@ -63,19 +64,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52385, -0.252721)
 material_override = SubResource("StandardMaterial3D_hqyb8")
 mesh = SubResource("BoxMesh_r42tm")
 
-[node name="Head" type="Node3D" parent="Orientation"]
-unique_name_in_owner = true
+[node name="HeadOriginalPosition" type="Node3D" parent="Orientation"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.79, 0)
 
-[node name="CameraOffsetter" type="Node3D" parent="Orientation/Head"]
+[node name="Head" type="Node3D" parent="Orientation/HeadOriginalPosition"]
 unique_name_in_owner = true
 
-[node name="Camera3D" type="Camera3D" parent="Orientation/Head/CameraOffsetter"]
+[node name="CameraOffsetter" type="Node3D" parent="Orientation/HeadOriginalPosition/Head"]
+unique_name_in_owner = true
+
+[node name="Camera3D" type="Camera3D" parent="Orientation/HeadOriginalPosition/Head/CameraOffsetter"]
 unique_name_in_owner = true
 cull_mask = 1048573
 current = true
 
-[node name="InteractionRaycast" type="RayCast3D" parent="Orientation/Head/CameraOffsetter/Camera3D"]
+[node name="InteractionRaycast" type="RayCast3D" parent="Orientation/HeadOriginalPosition/Head/CameraOffsetter/Camera3D"]
 target_position = Vector3(0, 0, -2)
 collision_mask = 7
 hit_from_inside = true
@@ -85,6 +88,6 @@ script = ExtResource("2_1u1xk")
 [node name="PlayerInteractionComponent" type="Node" parent="." node_paths=PackedStringArray("interaction_raycast")]
 unique_name_in_owner = true
 script = ExtResource("3_v7wrg")
-interaction_raycast = NodePath("../Orientation/Head/CameraOffsetter/Camera3D/InteractionRaycast")
+interaction_raycast = NodePath("../Orientation/HeadOriginalPosition/Head/CameraOffsetter/Camera3D/InteractionRaycast")
 
 [node name="PlayerHUD" parent="." instance=ExtResource("2_givcc")]

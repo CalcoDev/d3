@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cmhod6gddvbhw"]
+[gd_scene load_steps=14 format=3 uid="uid://cmhod6gddvbhw"]
 
 [ext_resource type="Texture2D" uid="uid://ce4okpev2mgrg" path="res://addons/kenney_prototype_textures/dark/texture_01.png" id="1_4fxah"]
 [ext_resource type="PackedScene" uid="uid://cym58huy6024l" path="res://scenes/utils/csg_stair_maker.tscn" id="2_nlqvs"]
@@ -27,6 +27,9 @@ background_mode = 2
 sky = SubResource("Sky_s0qyt")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dmxl6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rl6po"]
+albedo_color = Color(0.576471, 0.196078, 0.45098, 1)
 
 [node name="Lake" type="Node3D"]
 
@@ -91,6 +94,21 @@ size = Vector3(0.2, 0.8, 0.2)
 
 [node name="Box18" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0.9, -6.5)
+use_collision = true
+size = Vector3(2.6, 0.2, 1.6)
+
+[node name="Box19" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 1.7, -6.5)
+use_collision = true
+size = Vector3(2.6, 0.2, 1.6)
+
+[node name="Box21" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 1.8, -4)
+use_collision = true
+size = Vector3(2.6, 0.2, 1.6)
+
+[node name="Box20" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 1.9, -1.5)
 use_collision = true
 size = Vector3(2.6, 0.2, 1.6)
 
@@ -228,17 +246,6 @@ size = Vector3(0.2, 0.2, 0.2)
 [node name="Marker3D" type="Marker3D" parent="."]
 transform = Transform3D(-0.99997, 0.000282431, 0.00770307, 0, 0.999329, -0.0366402, -0.00770824, -0.0366391, -0.999299, -6.25113, 0.289975, 0.926834)
 
-[node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 5.5, -6)
-collision_layer = 4
-collision_mask = 7
-mass = 10000.0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-shape = SubResource("BoxShape3D_dmxl6")
-
-[node name="CSGBox3D" type="CSGBox3D" parent="RigidBody3D"]
-
 [node name="Door" type="RigidBody3D" parent="." groups=["interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, -8)
 collision_layer = 4
@@ -250,5 +257,6 @@ script = ExtResource("5_jm7r5")
 shape = SubResource("BoxShape3D_dmxl6")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Door"]
+material = SubResource("StandardMaterial3D_rl6po")
 
 [node name="BasicInteraction" parent="Door" instance=ExtResource("6_n75tg")]
