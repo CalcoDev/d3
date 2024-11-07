@@ -1,6 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://cmhod6gddvbhw"]
+[gd_scene load_steps=16 format=3 uid="uid://cmhod6gddvbhw"]
 
 [ext_resource type="Texture2D" uid="uid://ce4okpev2mgrg" path="res://addons/kenney_prototype_textures/dark/texture_01.png" id="1_4fxah"]
+[ext_resource type="Texture2D" uid="uid://bfydbuig6k54g" path="res://addons/kenney_prototype_textures/orange/texture_01.png" id="2_0p7pw"]
 [ext_resource type="PackedScene" uid="uid://cym58huy6024l" path="res://scenes/utils/csg_stair_maker.tscn" id="2_nlqvs"]
 [ext_resource type="PackedScene" uid="uid://buyq0xaarcned" path="res://scenes/characters/player/player.tscn" id="2_rovfh"]
 [ext_resource type="Texture2D" uid="uid://c63sx33rlk8le" path="res://addons/kenney_prototype_textures/purple/texture_01.png" id="3_8n1jx"]
@@ -9,6 +10,11 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r5nk4"]
 albedo_texture = ExtResource("1_4fxah")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cq6fo"]
+albedo_texture = ExtResource("2_0p7pw")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
@@ -147,6 +153,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, -18)
 use_collision = true
 size = Vector3(2, 2, 2)
 
+[node name="Box22" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.28436, 1, -22)
+use_collision = true
+size = Vector3(3, 2, 0.2)
+
+[node name="Box24" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.28436, -12.4287, -31)
+use_collision = true
+size = Vector3(3, 28.8574, 0.2)
+material = SubResource("StandardMaterial3D_cq6fo")
+
+[node name="Box25" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.28436, -15.4287, -26.2)
+use_collision = true
+size = Vector3(3, 28.8574, 0.2)
+material = SubResource("StandardMaterial3D_cq6fo")
+
+[node name="Box23" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.28436, 2, -19)
+use_collision = true
+size = Vector3(3, 2, 0.2)
+
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.9584, 2, 0)
 use_collision = true
@@ -220,16 +248,9 @@ num_stairs = 6
 
 [node name="Player" parent="." instance=ExtResource("2_rovfh")]
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.29268, 1.88565, -10.6553)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.32669, 1.88565, -20.0724)
 continuous_cd = true
 max_slope_angle = 35.0
-walk_speed = 5.0
-sprint_speed = 8.0
-accel = 30.0
-max_accel_force = 50.0
-air_accel = 17.0
-air_max_accel = 30.0
-jump_height_approx = 1.5
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.838682, 0.395054, -0.374893, 0, 0.688355, 0.725374, 0.544621, 0.608358, -0.577311, 0, 31, 0)

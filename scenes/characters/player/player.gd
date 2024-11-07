@@ -2,7 +2,7 @@ class_name PlayerController
 extends RigidBody3D
 
 @export_group("Look Around")
-@export var look_sensitivity := 1.0
+@export var look_sensitivity := 0.6
 const SENS_MULT := 0.006
 
 @export_group("Groundedness")
@@ -17,18 +17,23 @@ var _floor_angle: float = 0.0
 var _is_touching_ground_but_maybe_not_floor: bool = false
 
 @export_group("Movement")
-@export var walk_speed: float = 8.0
-@export var sprint_speed: float = 6.0
-@export var accel: float = 200.0
+@export var walk_speed: float = 5.0
+@export var sprint_speed: float = 8.0
+@export var accel: float = 30.0
 @export var accel_factor_from_dot: Curve
-@export var max_accel_force: float = 150.0
+@export var max_accel_force: float = 50.0
 @export var max_accel_factor_from_dot: Curve
 @export var max_fall: float = 200.0
 
-@export var air_accel: float = 20.0
-@export var air_max_accel: float = 20.0
+var _max_fall: float = max_fall
+
+@export var air_accel: float = 17.0
+@export var air_max_accel: float = 30.0
 
 var _target_speed: float = 0.0
+
+@export_group("Crouching")
+@export var crouch_speed: float = 3
 
 # stair handling
 @export_group("Stairs")
@@ -56,7 +61,7 @@ const BOB_SHIFT: float = PI / 4.0
 var bob_time: float = 0.0
 
 @export_group("Jump")
-@export var jump_height_approx: float = 2.0
+@export var jump_height_approx: float = 1.5
 @export var jump_cancel_rate: float = 5.0
 
 var _is_jumping: bool = false
@@ -71,7 +76,8 @@ var _jump_descent: bool = false
 
 # who knows lol
 @onready var _orientation: Node3D = %Orientation
-@onready var _camera: Camera3D = %Camera3D
+# @onready var _camera: Camera3D = %Camera3D
+@onready var _camera: Node3D = %CameraMount
 @onready var _head: Node3D = %Head
 @onready var _world_model: Node3D = %WorldModel
 @onready var _camera_offsetter: Node3D = %CameraOffsetter
@@ -98,10 +104,17 @@ var _stair_snap_camera_offset: Vector3 = Vector3.ZERO
 var _is_crouching: bool = false
 
 # Wall Jumping / Sliding
+@export_group("Wall Jump")
+@export var wall_slide_max_fall: float = 100.0
+var _was_wall_sliding: bool = false
+var _is_wall_sliding: bool = false
+var _wall_slide_stop_y_vel: bool = false
+
+var _is_wall_jumping: bool = false
 
 func _ready() -> void:
 	# TODO(calco): Remove in prod
-	_camera.current = false
+# 	_camera.current = false
 	for child: VisualInstance3D in _world_model.find_children("*", "VisualInstance3D"):
 		child.set_layer_mask_value(1, false)
 		child.set_layer_mask_value(2, true)
@@ -130,6 +143,10 @@ func _process(delta: float) -> void:
 		_target_speed = sprint_speed
 	else:
 		_target_speed = walk_speed
+		
+	if Input.is_action_just_pressed("_dbg_explode"):
+		var r := random_on_unit_sphere()
+		apply_impulse(r * 50)
 	
 	_coyote_buffer_timer -= delta
 	_jump_buffer_timer -= delta
@@ -141,7 +158,7 @@ func _process(delta: float) -> void:
 	
 	# Crouching
 #     print(_can_uncrouch())
-	if Input.is_action_pressed("crouch") and not _is_crouching:
+	if _is_grounded and Input.is_action_pressed("crouch") and not _is_crouching:
 		_is_crouching = true
 		_head.position = Vector3.DOWN * crouch_height_offset
 		if _collision_shape.shape is BoxShape3D:
@@ -192,8 +209,10 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	_handle_raycasts()
 	
 	if not _was_grounded and _is_grounded:
+		_wall_slide_stop_y_vel = true
 		_wish_vel = _wish_vel.slide(_floor_normal)
 		_is_jumping = false
+		_is_wall_jumping = false
 	if _was_grounded and not _is_grounded:
 		_wish_vel = _wish_vel.slide(Vector3.UP)
 
@@ -217,6 +236,27 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		_jump_inp_released = false
 		_jump_descent = false
 	
+	# Wall Jumps
+# 	print(linear_velocity)
+	if _can_wall_slide() and not _is_grounded and _jump_buffer_timer > 0.0:
+# 		print("--> jupmp trigger")
+		gravity_scale = 1.0
+		linear_velocity = Vector3.ZERO
+		
+		_jump_buffer_timer = 0.0
+		_is_jumping = true
+		_is_wall_jumping = true
+		_jump_inp_released = false
+		_jump_descent = false
+		
+		var gravity_str: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+		var force := sqrt(jump_height_approx * gravity_str * 2.5) * mass
+		apply_impulse(Vector3.UP * force)
+		
+		var zx_impulse := _wall_normal * _get_target_speed()
+		_wish_vel = zx_impulse
+		apply_impulse(zx_impulse)
+	
 	# Stair snapping
 	if not _is_grounded and linear_velocity.y < 0.0 and (_was_grounded or _snapped_down_last_frame):
 		var test := PhysicsTestMotionResult3D.new()
@@ -229,11 +269,14 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	
 	# Movement
 	if _is_grounded:
+# 		print("ground")
 		_handle_ground_movement(delta)
 	else:
 		# TODO(calco): Should still allow movement, just not in that direction lmao.
 		if _is_touching_ground_but_maybe_not_floor:
+# 			print("notfloor")
 			return
+# 		print("air")
 		_handle_air_movement(delta)
 	   
 	_prev_velocity = linear_velocity
@@ -293,6 +336,8 @@ func _handle_raycasts() -> void:
 		if is_ceiling:
 			_is_touching_ceiling = true
 			_ceiling_normal = normal
+	if _is_touching_wall:
+		_is_touching_ground_but_maybe_not_floor = false
 
 func _handle_ground_movement(delta: float) -> void:
 	var unit_vel := linear_velocity.normalized()
@@ -306,22 +351,13 @@ func _handle_ground_movement(delta: float) -> void:
 		apply_force(req_force)
 	
 	var slope_dir := _wish_dir.slide(_floor_normal).normalized()
-	var wish_vel := slope_dir * _target_speed
+	var wish_vel := slope_dir * _get_target_speed()
 	_wish_vel = _wish_vel.move_toward(wish_vel, curr_accel * delta)
 	
 	# stair stuff
 	if _is_touching_wall:
 		const BOTTOM_RAYCAST_LEN: float = 0.4 + 0.3
 		const TOP_RAYCAST_LEN: float = 0.4 + 0.3
-		# have to rewrite this using shape casts or test motion body lmfao
-# 		var from = global_transform.translated(Vector3.UP * 0.025)
-# 		var motion = slope_dir * BOTTOM_RAYCAST_LEN
-# 		var res := PhysicsTestMotionResult3D.new()
-# 		if _run_body_test_motion(from, motion, res):
-# 			from = from.translated(Vector3.UP * (max_step_height - 0.0125))
-# 			motion = slope_dir * TOP_RAYCAST_LEN
-# 			pass
-
 		var from := global_position + Vector3.UP * 0.025
 		var to := from + slope_dir * BOTTOM_RAYCAST_LEN
 		var res := raycast(from, to, 1)
@@ -353,20 +389,59 @@ func _handle_ground_movement(delta: float) -> void:
 	apply_force(required_force)
 
 func _handle_air_movement(delta: float) -> void:
+	# Wall Jumping and Fall Limiting
+	_was_wall_sliding = _is_wall_sliding
+	if _can_wall_slide():
+		var dot = _wall_normal.dot(_wish_dir)
+		if _wall_normal.length_squared() > 0.01 and _wish_dir.length_squared() > 0.01 and dot < 0.85:
+			_is_wall_sliding = true
+		else:
+			_is_wall_sliding = false
+	else:
+		_is_wall_sliding = false
+	
+	gravity_scale = 1.0
+	_max_fall = max_fall
+	if _is_wall_sliding and linear_velocity.y < 0.0:
+		gravity_scale = 0.2
+		_max_fall = wall_slide_max_fall
+	if linear_velocity.y < -_max_fall:
+		linear_velocity.y = -max_fall
+	
+	if not _was_wall_sliding and _is_wall_sliding and _wall_slide_stop_y_vel and linear_velocity.y < 0.0:
+		linear_velocity.y = min(linear_velocity.y * 0.2, 0.5)
+		# TODO(calco): Determine what Ultrakill and Karlson do here lmao
+# 		_wall_slide_stop_y_vel = false
+	
+	# Actual movement
 	var unit_vel := Vector3.ZERO
 	if abs(linear_velocity.x) + abs(linear_velocity.z) > 0.0:
 		unit_vel = (linear_velocity * Vector3(1,0,1)).normalized()
 	var vel_dot := _wish_dir.dot(unit_vel)
 	var curr_accel := air_accel * accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
 
-	var wish_vel := _wish_dir * _target_speed
+	var wish_vel := _wish_dir * _get_target_speed()
 	_wish_vel = _wish_vel.move_toward(wish_vel, curr_accel * delta)
+# 	print(linear_velocity.length())
 
-	if _wish_dir.length_squared() > 0.01:
-		var required_force := (_wish_vel - linear_velocity*Vector3(1,0,1)) / delta
-		var max_accel := air_max_accel * max_accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
-		required_force = required_force.limit_length(max_accel)
-		apply_force(required_force)
+	var mult := 0.1
+	if _is_wall_sliding or _wish_dir.length_squared() > 0.01:
+		mult = 1.0
+
+	var required_force := (_wish_vel - linear_velocity*Vector3(1,0,1)) / delta
+	var max_accel := air_max_accel * max_accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
+	required_force = (required_force * mult).limit_length(max_accel)
+	apply_force(required_force)
+# 	print("force: ", required_force, " | mult: ", mult)
+	
+func _can_wall_slide() -> bool:
+	return _is_touching_wall
+	
+func _get_target_speed() -> float:
+	if _is_crouching:
+		return crouch_speed
+	else:
+		return _target_speed
 
 func raycast(from: Vector3, to: Vector3, mask: int = 4294967295, exclude: Array[RID] = []) -> Dictionary:
 	var state := get_world_3d().direct_space_state
@@ -402,3 +477,15 @@ func _is_wall(vec: Vector3) -> bool:
 func _is_ceiling(normal: Vector3) -> bool:
 	var angle = Vector3.DOWN.angle_to(normal)
 	return angle < deg_to_rad(max_ceiling_angle)
+
+func random_on_unit_sphere() -> Vector3:
+	var x1 = randf_range (-1, 1)
+	var x2 = randf_range (-1, 1)
+	while x1*x1 + x2*x2 >= 1:
+		x1 = randf_range(-1, 1)
+		x2 = randf_range(-1, 1)
+	var random_pos_on_unit_sphere = Vector3 (
+	2 * x1 * sqrt(1 - x1*x1 - x2*x2),
+	2 * x2 * sqrt(1 - x1*x1 - x2*x2),
+	1 - 2 * (x1*x1 + x2*x2))
+	return random_pos_on_unit_sphere
