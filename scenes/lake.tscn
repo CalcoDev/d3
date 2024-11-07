@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://cmhod6gddvbhw"]
+[gd_scene load_steps=13 format=3 uid="uid://cmhod6gddvbhw"]
 
 [ext_resource type="Texture2D" uid="uid://ce4okpev2mgrg" path="res://addons/kenney_prototype_textures/dark/texture_01.png" id="1_4fxah"]
 [ext_resource type="PackedScene" uid="uid://cym58huy6024l" path="res://scenes/utils/csg_stair_maker.tscn" id="2_nlqvs"]
 [ext_resource type="PackedScene" uid="uid://buyq0xaarcned" path="res://scenes/characters/player/player.tscn" id="2_rovfh"]
 [ext_resource type="Texture2D" uid="uid://c63sx33rlk8le" path="res://addons/kenney_prototype_textures/purple/texture_01.png" id="3_8n1jx"]
 [ext_resource type="Script" path="res://scenes/prefabs/door/door.gd" id="5_jm7r5"]
+[ext_resource type="PackedScene" uid="uid://cprddsnky6jvp" path="res://scenes/components/interactions/basic_interaction.tscn" id="6_n75tg"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r5nk4"]
 albedo_texture = ExtResource("1_4fxah")
@@ -249,3 +250,5 @@ script = ExtResource("5_jm7r5")
 shape = SubResource("BoxShape3D_dmxl6")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Door"]
+
+[node name="BasicInteraction" parent="Door" instance=ExtResource("6_n75tg")]
