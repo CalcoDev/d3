@@ -64,6 +64,8 @@ var bob_time: float = 0.0
 @export var jump_height_approx: float = 1.5
 @export var jump_cancel_rate: float = 5.0
 
+@export var _wall_jump_force: float = 2.0
+
 var _is_jumping: bool = false
 
 const JUMP_BUFFER_TIME: float = 0.15
@@ -76,13 +78,14 @@ var _jump_descent: bool = false
 
 # who knows lol
 @onready var _orientation: Node3D = %Orientation
-# @onready var _camera: Camera3D = %Camera3D
-@onready var _camera: Node3D = %CameraMount
+@onready var _camera: Camera3D = %Camera3D
+@onready var _camera_mount: Node3D = %CameraMount
 @onready var _head: Node3D = %Head
 @onready var _world_model: Node3D = %WorldModel
 @onready var _camera_offsetter: Node3D = %CameraOffsetter
 @onready var _collision_shape: CollisionShape3D = %CollisionShape3D
 
+var _input_dir := Vector3.ZERO
 var _wish_dir := Vector3.ZERO
 var _wish_vel := Vector3.ZERO
 
@@ -106,6 +109,7 @@ var _is_crouching: bool = false
 # Wall Jumping / Sliding
 @export_group("Wall Jump")
 @export var wall_slide_max_fall: float = 100.0
+@export var wall_jump_horiz_force: Curve
 var _was_wall_sliding: bool = false
 var _is_wall_sliding: bool = false
 var _wall_slide_stop_y_vel: bool = false
@@ -130,13 +134,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		if event is InputEventMouseMotion:
-			_orientation.rotate_y(-event.relative.x * look_sensitivity * SENS_MULT)
-			_camera.rotate_x(-event.relative.y * look_sensitivity * SENS_MULT)
+			_orientation.rotate_y(-event.screen_relative.x * look_sensitivity * SENS_MULT)
+			_camera.rotate_x(-event.screen_relative.y * look_sensitivity * SENS_MULT)
 			_camera.rotation.x = clampf(_camera.rotation.x, -PI*0.5, PI*0.5)
 
 func _process(delta: float) -> void:
 	var input = Input.get_vector("left", "right", "up", "down").normalized()
 	var abs_dir = Vector3(input.x, 0.0, input.y)
+	_input_dir = abs_dir
 	_wish_dir = _orientation.global_transform.basis * abs_dir
 	
 	if Input.is_action_pressed("sprint"):
@@ -179,7 +184,7 @@ func _process(delta: float) -> void:
 			_collision_shape.position.y += crouch_height_offset * 0.5
 	
 	# View bobbing effect:
-	var target_pos := _camera.position
+	var target_pos := _camera_mount.position
 	if _is_grounded:
 		var forward = abs(abs_dir.z) > 0.0
 		var right = abs(abs_dir.x) > 0.0
@@ -194,7 +199,7 @@ func _process(delta: float) -> void:
 			bob_time = asin(target_pos.y / BOB_AMOUNT.y)
 		if forward or right:
 			bob_time += delta * BOB_FREQ
-		_camera.position = _camera.position.lerp(target_pos, delta * BOB_MOVE_SPEED)
+		_camera_mount.position = _camera_mount.position.lerp(target_pos, delta * BOB_MOVE_SPEED)
 		
 	# Handle stair snap smoothing
 	if _stair_snap_camera_offset.length_squared() > 0.001:
@@ -250,11 +255,13 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		_jump_descent = false
 		
 		var gravity_str: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-		var force := sqrt(jump_height_approx * gravity_str * 2.5) * mass
+		var force := sqrt(jump_height_approx * 0.75 * gravity_str * 2.5) * mass
 		apply_impulse(Vector3.UP * force)
 		
-		var zx_impulse := _wall_normal * _get_target_speed()
-		_wish_vel = zx_impulse
+		# apply sideways impulse based on a scaled dot?
+		var d := _wish_dir.dot(_wall_normal)
+		var zx_impulse := (_wall_normal * _wall_jump_force) * wall_jump_horiz_force.sample((-d + 1.0) / 2.0)
+		_wish_vel += zx_impulse
 		apply_impulse(zx_impulse)
 	
 	# Stair snapping
@@ -412,7 +419,7 @@ func _handle_air_movement(delta: float) -> void:
 		linear_velocity.y = min(linear_velocity.y * 0.2, 0.5)
 		# TODO(calco): Determine what Ultrakill and Karlson do here lmao
 # 		_wall_slide_stop_y_vel = false
-	
+
 	# Actual movement
 	var unit_vel := Vector3.ZERO
 	if abs(linear_velocity.x) + abs(linear_velocity.z) > 0.0:
@@ -421,18 +428,33 @@ func _handle_air_movement(delta: float) -> void:
 	var curr_accel := air_accel * accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
 
 	var wish_vel := _wish_dir * _get_target_speed()
-	_wish_vel = _wish_vel.move_toward(wish_vel, curr_accel * delta)
-# 	print(linear_velocity.length())
+
+	var wvel := wish_vel.length_squared()
+	if wvel > 0.01 and _wish_vel.length_squared() > wvel:
+		_wish_vel = _wish_vel.move_toward(wish_vel, curr_accel * delta).normalized() * _wish_vel.length()
+	else:
+		_wish_vel = _wish_vel.move_toward(wish_vel, curr_accel * delta)
 
 	var mult := 0.1
 	if _is_wall_sliding or _wish_dir.length_squared() > 0.01:
-		mult = 1.0
+		mult = 0.6
+	
+	# if on wall and trying to move away from it
+	if _is_wall_sliding or _can_wall_slide():
+		var d = _wish_dir.dot(_wall_normal)
+		if d > 0.0:
+			if d < 0.95:
+				_wish_vel = _wish_vel - _wish_vel.project(_wall_normal)
+# 				_wish_vel = _wish_vel - _wish_vel.slide(_wall_normal)
+			else:
+				_wish_vel = _wish_vel - _wish_vel.project(_wall_normal) * 0.05
+# 				_wish_vel = _wish_vel - _wish_vel.slide(_wall_normal) * 0.05
 
+	# TODO(calco): I kinda hate this because it makes it similar to using velocity = ...
 	var required_force := (_wish_vel - linear_velocity*Vector3(1,0,1)) / delta
 	var max_accel := air_max_accel * max_accel_factor_from_dot.sample((vel_dot + 1.0) / 2.0)
 	required_force = (required_force * mult).limit_length(max_accel)
 	apply_force(required_force)
-# 	print("force: ", required_force, " | mult: ", mult)
 	
 func _can_wall_slide() -> bool:
 	return _is_touching_wall

@@ -13,7 +13,7 @@ config_version=5
 config/name="d3"
 config/description="three d game lol"
 run/main_scene="res://scenes/lake.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 run/max_fps=240
 config/icon="res://icon.svg"
 
@@ -21,13 +21,22 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=1440
 window/size/viewport_height=810
-window/size/window_width_override=1920
-window/size/window_height_override=1080
+window/size/window_width_override=1280
+window/size/window_height_override=720
 window/stretch/mode="canvas_items"
+window/vsync/vsync_mode=0
 
 [dotnet]
 
 project/assembly_name="d3"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/MonoBuildToggler/plugin.cfg", "res://addons/YarnSpinner-Godot/plugin.cfg", "res://addons/anthonyec.camera_preview/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false
 
 [global_group]
 

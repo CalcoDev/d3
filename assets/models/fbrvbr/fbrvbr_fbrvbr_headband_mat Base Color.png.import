@@ -1,0 +1,38 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://ctka4bi08bvoc"
+path.s3tc="res://.godot/imported/fbrvbr_fbrvbr_headband_mat Base Color.png-ce0e32b4fd82d9068e5ba363ff020625.s3tc.ctex"
+metadata={
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
+}
+generator_parameters={
+"md5": "1c940ee3eff0918e6a3f2957f6a00c8a"
+}
+
+[deps]
+
+source_file="res://assets/models/fbrvbr/fbrvbr_fbrvbr_headband_mat Base Color.png"
+dest_files=["res://.godot/imported/fbrvbr_fbrvbr_headband_mat Base Color.png-ce0e32b4fd82d9068e5ba363ff020625.s3tc.ctex"]
+
+[params]
+
+compress/mode=2
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=0

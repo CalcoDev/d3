@@ -3,20 +3,20 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bqrhth5w2jb1u"
-path="res://.godot/imported/tortij.glb-a775539dbe4225dc7d260770a4c63d1e.scn"
+uid="uid://b42brg4dw1kdx"
+path="res://.godot/imported/fur_grapple.glb-ec285a3e70b52b32344a6be6ef0bbff0.scn"
 
 [deps]
 
-source_file="res://assets/models/objects/tortij.glb"
-dest_files=["res://.godot/imported/tortij.glb-a775539dbe4225dc7d260770a4c63d1e.scn"]
+source_file="res://assets/models/weapons/tail_grapple/fur_grapple.glb"
+dest_files=["res://.godot/imported/fur_grapple.glb-ec285a3e70b52b32344a6be6ef0bbff0.scn"]
 
 [params]
 
 nodes/root_type=""
 nodes/root_name=""
 nodes/apply_root_scale=true
-nodes/root_scale=2.0
+nodes/root_scale=1.0
 nodes/import_as_skeleton_bones=false
 meshes/ensure_tangents=true
 meshes/generate_lods=true
@@ -31,16 +31,9 @@ animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
 import_script/path=""
-_subresources={
-"nodes": {
-"PATH:Tortij": {
-"generate/physics": true,
-"physics/body_type": 1,
-"physics/layer": 4,
-"physics/mask": 7,
-"physics/shape_type": 2
-}
-}
-}
+_subresources={}
+fbx/importer=0
+fbx/allow_geometry_helper_nodes=false
+fbx/embedded_image_handling=1
 gltf/naming_version=1
 gltf/embedded_image_handling=1

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cmhod6gddvbhw"]
+[gd_scene load_steps=17 format=3 uid="uid://cmhod6gddvbhw"]
 
 [ext_resource type="Texture2D" uid="uid://ce4okpev2mgrg" path="res://addons/kenney_prototype_textures/dark/texture_01.png" id="1_4fxah"]
 [ext_resource type="Texture2D" uid="uid://bfydbuig6k54g" path="res://addons/kenney_prototype_textures/orange/texture_01.png" id="2_0p7pw"]
@@ -22,6 +22,11 @@ uv1_world_triplanar = true
 albedo_texture = ExtResource("3_8n1jx")
 uv1_triplanar = true
 uv1_world_triplanar = true
+
+[sub_resource type="Curve" id="Curve_kkw0t"]
+max_value = 2.0
+_data = [Vector2(0, 0.88861), 0.0, -0.600964, 0, 0, Vector2(0.5, 0.7), -1.91395, 0.0, 0, 1, Vector2(1, 0.7), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8vr7w"]
 
@@ -158,10 +163,33 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.28436, 1, -22)
 use_collision = true
 size = Vector3(3, 2, 0.2)
 
+[node name="Box26" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -0.1, -28.2332)
+use_collision = true
+size = Vector3(1.46582, 3.46631, 0.2)
+
 [node name="Box24" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.28436, -12.4287, -31)
 use_collision = true
 size = Vector3(3, 28.8574, 0.2)
+material = SubResource("StandardMaterial3D_cq6fo")
+
+[node name="Box27" type="CSGBox3D" parent="Level"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2.11121, 1.5713, -33.9551)
+use_collision = true
+size = Vector3(7.90967, 2.42871, 0.2)
+material = SubResource("StandardMaterial3D_cq6fo")
+
+[node name="Box29" type="CSGBox3D" parent="Level"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 3.57821, 1.5713, -44.9551)
+use_collision = true
+size = Vector3(7.90967, 2.42871, 0.2)
+material = SubResource("StandardMaterial3D_cq6fo")
+
+[node name="Box28" type="CSGBox3D" parent="Level"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -3.39063, 1.5713, -38.9551)
+use_collision = true
+size = Vector3(7.90967, 2.42871, 0.2)
 material = SubResource("StandardMaterial3D_cq6fo")
 
 [node name="Box25" type="CSGBox3D" parent="Level"]
@@ -250,7 +278,10 @@ num_stairs = 6
 physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.32669, 1.88565, -20.0724)
 continuous_cd = true
+look_sensitivity = 0.24
 max_slope_angle = 35.0
+_wall_jump_force = 10.0
+wall_jump_horiz_force = SubResource("Curve_kkw0t")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.838682, 0.395054, -0.374893, 0, 0.688355, 0.725374, 0.544621, 0.608358, -0.577311, 0, 31, 0)

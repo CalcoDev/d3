@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cn66ixj52c1wx"]
+
+[ext_resource type="PackedScene" uid="uid://cojpl648216mr" path="res://assets/models/weapons/fbrvbr_gun/fbrvbr_grun.glb" id="1_ukmcq"]
+
+[node name="FbrvbrGun" type="Node3D"]
+
+[node name="WorldModel" type="Node3D" parent="."]
+
+[node name="fbrvbr_grun" parent="WorldModel" instance=ExtResource("1_ukmcq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.203349, 0.124087, 0)

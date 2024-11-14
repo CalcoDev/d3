@@ -1,4 +1,5 @@
 extends Node3D
+
 @export var follow_target: NodePath
 
 var target : Node3D

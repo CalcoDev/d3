@@ -58,10 +58,12 @@ unique_name_in_owner = true
 
 [node name="Bean" type="MeshInstance3D" parent="Orientation/WorldModel"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+layers = 2
 mesh = SubResource("CapsuleMesh_5nbq2")
 
 [node name="Glasses" type="MeshInstance3D" parent="Orientation/WorldModel"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.52385, -0.252721)
+layers = 2
 material_override = SubResource("StandardMaterial3D_hqyb8")
 mesh = SubResource("BoxMesh_r42tm")
 
@@ -92,6 +94,10 @@ collision_mask = 7
 hit_from_inside = true
 collide_with_areas = true
 script = ExtResource("2_1u1xk")
+
+[node name="HeldItemPosition" type="Marker3D" parent="Orientation/HeadOriginalPosition/SmoothCamera/Camera3D"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.739093, -0.300357, -0.977098)
 
 [node name="PlayerInteractionComponent" type="Node" parent="." node_paths=PackedStringArray("interaction_raycast")]
 unique_name_in_owner = true
