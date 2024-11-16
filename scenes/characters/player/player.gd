@@ -116,6 +116,9 @@ var _wall_slide_stop_y_vel: bool = false
 
 var _is_wall_jumping: bool = false
 
+@export_group("Weapon Stuff")
+# TODO(calco): do stuff here.
+
 func _ready() -> void:
 	# TODO(calco): Remove in prod
 # 	_camera.current = false
