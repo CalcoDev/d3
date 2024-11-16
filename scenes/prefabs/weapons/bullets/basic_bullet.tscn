@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://dkmfoeyxikqng"]
+
+[ext_resource type="Script" path="res://scripts/weapons/basic_bullet.gd" id="1_xuv3a"]
+[ext_resource type="PackedScene" uid="uid://crqme65tugiit" path="res://assets/models/fbrvbr/fbrvbr.glb" id="2_w34yk"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lq3em"]
+size = Vector3(0.2, 0.2, 0.2)
+
+[node name="Bullet" type="CharacterBody3D"]
+collision_layer = 0
+collision_mask = 7
+motion_mode = 1
+script = ExtResource("1_xuv3a")
+
+[node name="fbrvbr" parent="." instance=ExtResource("2_w34yk")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_lq3em")

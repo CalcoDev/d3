@@ -116,8 +116,25 @@ var _wall_slide_stop_y_vel: bool = false
 
 var _is_wall_jumping: bool = false
 
+@export_group("Held Items")
+
+# @onready var faction: FactionComponent = %FactionComponent
+
+@onready var _held_item_mount: Node3D = %HeldItemPosition
+var _equipped_item: Node3D = null
+
+func equip_item(obj: Node3D) -> void:
+	_equipped_item = obj
+	_equipped_item.reparent(_held_item_mount)
+	_equipped_item.position = Vector3.ZERO
+	_equipped_item.look_at(_held_item_mount.global_position + _held_item_mount.basis.z)
+
+func unequip_item() -> void:
+	_equipped_item.queue_free()
+	_equipped_item = null
+
 @export_group("Weapon Stuff")
-# TODO(calco): do stuff here.
+@export var weapon: DualWeapon = null
 
 func _ready() -> void:
 	# TODO(calco): Remove in prod
@@ -128,6 +145,9 @@ func _ready() -> void:
 	
 	_player_interaction_component.exclude_player(get_rid())
 	_player_interaction_component.interaction_reach = interaction_reach
+
+	weapon.setup_faction(get_child(1) as FactionComponent)
+	equip_item(weapon)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -164,8 +184,10 @@ func _process(delta: float) -> void:
 	if _is_jumping and Input.is_action_just_released("jump"):
 		_jump_inp_released = true
 	
+	# Gun stuff
+	weapon.check_fire(-_camera.global_basis.z, _camera.global_basis.y, "use_primary", "use_secondary")
+	
 	# Crouching
-#     print(_can_uncrouch())
 	if _is_grounded and Input.is_action_pressed("crouch") and not _is_crouching:
 		_is_crouching = true
 		_head.position = Vector3.DOWN * crouch_height_offset
@@ -380,7 +402,7 @@ func _handle_ground_movement(delta: float) -> void:
 				var init_pos = global_position
 				global_position.y += max_step_height + 0.1
 				var ll := (bottom_p - global_position).length()
-				var l := slope_dir * (ll - 0.5)
+				var l := slope_dir * (ll / 6.5)
 				global_position += l
 				var motion_res := PhysicsTestMotionResult3D.new()
 				var fr = global_transform

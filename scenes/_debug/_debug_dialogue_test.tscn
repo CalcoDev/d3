@@ -7,9 +7,8 @@
 
 [node name="YarnSpinnerCanvasLayer" parent="." instance=ExtResource("1_2rcl3")]
 
-[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0" node_paths=PackedStringArray("dialogueViews")]
+[node name="DialogueRunner" parent="YarnSpinnerCanvasLayer" index="0"]
 yarnProject = ExtResource("2_ay8rh")
-dialogueViews = [NodePath("../LineView"), NodePath("../OptionsListView")]
 startNode = "Start"
 startAutomatically = true
 

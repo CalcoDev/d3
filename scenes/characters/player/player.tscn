@@ -1,22 +1,24 @@
-[gd_scene load_steps=15 format=3 uid="uid://buyq0xaarcned"]
+[gd_scene load_steps=17 format=3 uid="uid://buyq0xaarcned"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/player.gd" id="1_ohpxq"]
 [ext_resource type="Script" path="res://scenes/components/interactions/interaction_raycast.gd" id="2_1u1xk"]
 [ext_resource type="Script" path="res://scripts/smooth_follow.gd" id="2_avi1u"]
 [ext_resource type="PackedScene" uid="uid://q7m5oaiqe3ca" path="res://scenes/characters/player/player_hud.tscn" id="2_givcc"]
+[ext_resource type="Script" path="res://scenes/components/faction_component.gd" id="2_lild3"]
 [ext_resource type="Script" path="res://scenes/components/interactions/player_interaction_component.gd" id="3_v7wrg"]
 [ext_resource type="PackedScene" uid="uid://bqhr2og3ba8k2" path="res://scenes/components/hitbox_component.tscn" id="6_pk8kf"]
 [ext_resource type="PackedScene" uid="uid://b2mfu65kd2vj1" path="res://scenes/components/basic_hitbox_responder.tscn" id="7_wyle8"]
+[ext_resource type="PackedScene" uid="uid://cn66ixj52c1wx" path="res://scenes/prefabs/weapons/fbrvbr_gun/fbrvbr_gun.tscn" id="8_vlet0"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8ga75"]
 friction = 0.0
 
-[sub_resource type="Curve" id="Curve_dlraq"]
+[sub_resource type="Curve" id="Curve_hqmf7"]
 max_value = 2.0
 _data = [Vector2(0, 2), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="Curve" id="Curve_nro8q"]
+[sub_resource type="Curve" id="Curve_7e5bn"]
 max_value = 2.0
 _data = [Vector2(0, 2), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 3
@@ -32,7 +34,7 @@ albedo_color = Color(0, 0, 0, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_r42tm"]
 size = Vector3(0.7, 0.3, 0.7)
 
-[node name="Player" type="RigidBody3D"]
+[node name="Player" type="RigidBody3D" node_paths=PackedStringArray("weapon")]
 collision_layer = 2
 collision_mask = 5
 axis_lock_angular_x = true
@@ -43,14 +45,27 @@ can_sleep = false
 contact_monitor = true
 max_contacts_reported = 32
 script = ExtResource("1_ohpxq")
-ground_layers = 5
-accel_factor_from_dot = SubResource("Curve_dlraq")
-max_accel_factor_from_dot = SubResource("Curve_nro8q")
+accel_factor_from_dot = SubResource("Curve_hqmf7")
+max_accel_factor_from_dot = SubResource("Curve_7e5bn")
+weapon = NodePath("FbrvbrGun")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("BoxShape3D_3qy4c")
+
+[node name="brother what the fuck" type="Node" parent="."]
+script = ExtResource("2_lild3")
+
+[node name="PlayerInteractionComponent" type="Node" parent="." node_paths=PackedStringArray("interaction_raycast")]
+unique_name_in_owner = true
+script = ExtResource("3_v7wrg")
+interaction_raycast = NodePath("../Orientation/HeadOriginalPosition/SmoothCamera/Camera3D/InteractionRaycast")
+
+[node name="BasicHitboxResponder" parent="." instance=ExtResource("7_wyle8")]
+
+[node name="HitboxComponent" parent="." instance=ExtResource("6_pk8kf")]
+default_responder = NodePath("../BasicHitboxResponder")
 
 [node name="Orientation" type="Node3D" parent="."]
 unique_name_in_owner = true
@@ -101,14 +116,6 @@ script = ExtResource("2_1u1xk")
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.739093, -0.300357, -0.977098)
 
-[node name="PlayerInteractionComponent" type="Node" parent="." node_paths=PackedStringArray("interaction_raycast")]
-unique_name_in_owner = true
-script = ExtResource("3_v7wrg")
-interaction_raycast = NodePath("../Orientation/HeadOriginalPosition/SmoothCamera/Camera3D/InteractionRaycast")
+[node name="FbrvbrGun" parent="." instance=ExtResource("8_vlet0")]
 
 [node name="PlayerHUD" parent="." instance=ExtResource("2_givcc")]
-
-[node name="HitboxComponent" parent="." instance=ExtResource("6_pk8kf")]
-default_responder = NodePath("../BasicHitboxResponder")
-
-[node name="BasicHitboxResponder" parent="." instance=ExtResource("7_wyle8")]
