@@ -450,7 +450,7 @@ func _handle_air_movement(delta: float) -> void:
 				_wish_vel = _wish_vel - _wish_vel.project(_wall_normal)
 # 				_wish_vel = _wish_vel - _wish_vel.slide(_wall_normal)
 			else:
-				_wish_vel = _wish_vel - _wish_vel.project(_wall_normal) * 0.05
+				_wish_vel = _wish_vel - _wish_vel.project(_wall_normal) * 0.005
 # 				_wish_vel = _wish_vel - _wish_vel.slide(_wall_normal) * 0.05
 
 	# TODO(calco): I kinda hate this because it makes it similar to using velocity = ...
