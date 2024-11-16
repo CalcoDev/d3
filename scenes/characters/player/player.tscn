@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://buyq0xaarcned"]
+[gd_scene load_steps=18 format=3 uid="uid://buyq0xaarcned"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/player.gd" id="1_ohpxq"]
 [ext_resource type="Script" path="res://scenes/components/interactions/interaction_raycast.gd" id="2_1u1xk"]
@@ -6,9 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://q7m5oaiqe3ca" path="res://scenes/characters/player/player_hud.tscn" id="2_givcc"]
 [ext_resource type="Script" path="res://scenes/components/faction_component.gd" id="2_lild3"]
 [ext_resource type="Script" path="res://scenes/components/interactions/player_interaction_component.gd" id="3_v7wrg"]
-[ext_resource type="PackedScene" uid="uid://bqhr2og3ba8k2" path="res://scenes/components/hitbox_component.tscn" id="6_pk8kf"]
-[ext_resource type="PackedScene" uid="uid://b2mfu65kd2vj1" path="res://scenes/components/basic_hitbox_responder.tscn" id="7_wyle8"]
 [ext_resource type="PackedScene" uid="uid://cn66ixj52c1wx" path="res://scenes/prefabs/weapons/fbrvbr_gun/fbrvbr_gun.tscn" id="8_vlet0"]
+[ext_resource type="Script" path="res://scenes/components/hurtbox_component.gd" id="9_n2rgc"]
+[ext_resource type="Script" path="res://scenes/components/health_component.gd" id="10_x24sc"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8ga75"]
 friction = 0.0
@@ -25,6 +25,10 @@ point_count = 3
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3qy4c"]
 size = Vector3(0.8, 1.8, 0.8)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fue15"]
+radius = 0.45
+height = 1.7
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_5nbq2"]
 
@@ -54,18 +58,28 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("BoxShape3D_3qy4c")
 
-[node name="brother what the fuck" type="Node" parent="."]
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("10_x24sc")
+
+[node name="FactionComponent" type="Node" parent="."]
 script = ExtResource("2_lild3")
+faction = 0
 
 [node name="PlayerInteractionComponent" type="Node" parent="." node_paths=PackedStringArray("interaction_raycast")]
 unique_name_in_owner = true
 script = ExtResource("3_v7wrg")
 interaction_raycast = NodePath("../Orientation/HeadOriginalPosition/SmoothCamera/Camera3D/InteractionRaycast")
 
-[node name="BasicHitboxResponder" parent="." instance=ExtResource("7_wyle8")]
+[node name="HurtboxComponent" type="Area3D" parent="." node_paths=PackedStringArray("health", "faction")]
+collision_layer = 16
+collision_mask = 8
+script = ExtResource("9_n2rgc")
+health = NodePath("../HealthComponent")
+faction = NodePath("../FactionComponent")
 
-[node name="HitboxComponent" parent="." instance=ExtResource("6_pk8kf")]
-default_responder = NodePath("../BasicHitboxResponder")
+[node name="Shape" type="CollisionShape3D" parent="HurtboxComponent"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_fue15")
 
 [node name="Orientation" type="Node3D" parent="."]
 unique_name_in_owner = true

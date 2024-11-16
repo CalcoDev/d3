@@ -17,6 +17,10 @@ config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 run/max_fps=240
 config/icon="res://icon.svg"
 
+[autoload]
+
+Draw3d="res://scripts/utils/draw3d.gd"
+
 [display]
 
 window/size/viewport_width=1920

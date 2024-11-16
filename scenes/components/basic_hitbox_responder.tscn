@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://b2mfu65kd2vj1"]
-
-[ext_resource type="Script" path="res://scenes/components/basic_hitbox_responder.gd" id="1_5rvx4"]
-
-[node name="BasicHitboxResponder" type="Node"]
-script = ExtResource("1_5rvx4")
-damage = 10.0

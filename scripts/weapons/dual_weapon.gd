@@ -16,28 +16,32 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	pass
 	
+func setup_owner(weapon_owner: Node3D) -> void:
+	primary.weapon_owner = weapon_owner
+	secondary.weapon_owner = weapon_owner
+
 func setup_faction(faction: FactionComponent) -> void:
 	primary.faction = faction
 	secondary.faction = faction
 	
-func check_fire(direction: Vector3, up_dir: Vector3, primary_act: StringName, secondary_act: StringName) -> void:
+func check_fire(pos: Vector3, direction: Vector3, up_dir: Vector3, primary_act: StringName, secondary_act: StringName) -> void:
 	# TODO(calco): Check stuff here
-	print(_use)
+# 	print(_use)
 	if not _use[1] or secondary_into_primary:
-		_check_fire(primary, primary_act, direction, up_dir)
+		_check_fire(pos, primary, primary_act, direction, up_dir)
 	if not _use[0] or primary_into_secondary:
-		_check_fire(secondary, secondary_act, direction, up_dir)
+		_check_fire(pos, secondary, secondary_act, direction, up_dir)
 
-func _check_fire(weapon: Weapon, input_action: StringName, direction: Vector3, up_dir: Vector3) -> void:
+func _check_fire(pos: Vector3, weapon: Weapon, input_action: StringName, direction: Vector3, up_dir: Vector3) -> void:
 	var s := int(weapon == secondary)
 	
 	if weapon.instant:
 		if Input.is_action_pressed(input_action):
 			_use[s] = true
 			if weapon.hold_down:
-				weapon.fire(direction, up_dir)
+				weapon.fire(pos, direction, up_dir)
 		elif not weapon.hold_down and Input.is_action_just_pressed(input_action):
-			_use[s] = weapon.fire(direction, up_dir)
+			_use[s] = weapon.fire(pos, direction, up_dir)
 		else:
 			_use[s] = false
 	else:
@@ -47,7 +51,7 @@ func _check_fire(weapon: Weapon, input_action: StringName, direction: Vector3, u
 			if weapon.hold_down and Input.is_action_pressed(input_action):
 				_use[s] = weapon.start_charge()
 		elif weapon.is_charging and not Input.is_action_pressed(input_action):
-			weapon.finish_charge(direction, up_dir)
+			weapon.finish_charge(pos, direction, up_dir)
 			_use[s] = false
 		elif weapon.is_charging:
 			_use[s] = true

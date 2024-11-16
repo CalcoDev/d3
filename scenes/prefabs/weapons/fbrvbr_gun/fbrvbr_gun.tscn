@@ -1,15 +1,16 @@
-[gd_scene load_steps=6 format=3 uid="uid://cn66ixj52c1wx"]
+[gd_scene load_steps=7 format=3 uid="uid://cn66ixj52c1wx"]
 
 [ext_resource type="Script" path="res://scenes/prefabs/weapons/fbrvbr_gun/fbrvbr_gun.gd" id="1_575xl"]
 [ext_resource type="PackedScene" uid="uid://cojpl648216mr" path="res://assets/models/weapons/fbrvbr_gun/fbrvbr_grun.glb" id="1_ukmcq"]
 [ext_resource type="Script" path="res://scripts/weapons/projectile_weapon.gd" id="3_pkeub"]
 [ext_resource type="Script" path="res://scripts/weapons/weapon.gd" id="4_biycx"]
 [ext_resource type="PackedScene" uid="uid://dkmfoeyxikqng" path="res://scenes/prefabs/weapons/bullets/basic_bullet.tscn" id="4_l6k3a"]
+[ext_resource type="Script" path="res://scripts/weapons/hitscan_weapon.gd" id="5_tbptp"]
 
 [node name="FbrvbrGun" type="Node3D" node_paths=PackedStringArray("primary", "secondary")]
 script = ExtResource("1_575xl")
-primary = NodePath("ProjectileWeapon")
-secondary = NodePath("Weapon")
+primary = NodePath("HitscanWeapon")
+secondary = NodePath("ProjectileWeapon")
 
 [node name="WorldModel" type="Node3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
@@ -17,11 +18,22 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 
 [node name="fbrvbr_grun" parent="WorldModel" instance=ExtResource("1_ukmcq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.203349, 0.124087, 0)
 
+[node name="ProjectileWeaponShooter" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0178682, 0.114014, 1.70694)
+
 [node name="ProjectileWeapon" type="Node" parent="."]
 script = ExtResource("3_pkeub")
 fire_point_path = NodePath("../ProjectileWeaponShooter")
 bullet_prefab = ExtResource("4_l6k3a")
+bullet_spread = Vector2(30, 30)
+bullet_speed = 5.0
 fire_rate = 0.2
+
+[node name="HitscanWeapon" type="Node3D" parent="."]
+script = ExtResource("5_tbptp")
+fire_point_path = NodePath("../ProjectileWeaponShooter")
+collision_layers = 7
+fire_rate = 0.5
 
 [node name="Weapon" type="Node" parent="."]
 script = ExtResource("4_biycx")
@@ -30,5 +42,4 @@ instant = false
 charge_time = 2.0
 fire_rate = 0.1
 
-[node name="ProjectileWeaponShooter" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0178682, 0.114014, 1.70694)
+[node name="Node" type="Node" parent="."]

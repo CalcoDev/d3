@@ -3,12 +3,15 @@ class_name Weapon
 extends Node
 
 class FireParams:
+	var position: Vector3 = Vector3.INF
 	var direction: Vector3 = Vector3.ZERO
 	var charge_percentage: float = 0.0
 	var charge: float = 0.0
 	var up_dir: Vector3 = Vector3.ZERO
 	
-	func _init(d: Vector3, cp: float, c: float, up_dir: Vector3) -> void:
+	@warning_ignore("shadowed_variable")
+	func _init(pos: Vector3, d: Vector3, cp: float, c: float, up_dir: Vector3) -> void:
+		self.position = pos
 		self.direction = d
 		self.charge_percentage = cp
 		self.charge = c
@@ -35,6 +38,8 @@ var _charge_timer: float = 0.0
 @export var fire_rate: float = 0.0
 var _fire_rate_timer: float = 0.0
 
+var weapon_owner: Node3D = null
+
 # Lifecycle
 func _ready() -> void:
 	pass
@@ -59,9 +64,9 @@ func stop_charge() -> bool:
 	on_end_charge.emit()
 	return true
 
-func finish_charge(direction: Vector3, up_dir: Vector3) -> bool:
+func finish_charge(position: Vector3, direction: Vector3, up_dir: Vector3) -> bool:
 	stop_charge()
-	return fire(direction, up_dir)
+	return fire(position, direction, up_dir)
 
 func get_charge_percentage() -> float:
 	return minf(1.0, _charge_timer / charge_time)
@@ -72,10 +77,10 @@ func _update_charge(delta: float) -> void:
 		on_charge.emit(_charge_timer)
 
 # Firing
-func fire(direction: Vector3, up_dir: Vector3) -> bool:
+func fire(position: Vector3, direction: Vector3, up_dir: Vector3) -> bool:
 	if _fire_rate_timer > 0.0:
 		return false
-	var params := FireParams.new(direction, get_charge_percentage(), _charge_timer, up_dir)
+	var params := FireParams.new(position, direction, get_charge_percentage(), _charge_timer, up_dir)
 	on_fired.emit(params)
 	_fire_rate_timer = fire_rate
 	return true

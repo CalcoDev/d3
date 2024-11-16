@@ -146,6 +146,7 @@ func _ready() -> void:
 	_player_interaction_component.exclude_player(get_rid())
 	_player_interaction_component.interaction_reach = interaction_reach
 
+	weapon.setup_owner(self)
 	weapon.setup_faction(get_child(1) as FactionComponent)
 	equip_item(weapon)
 
@@ -185,7 +186,7 @@ func _process(delta: float) -> void:
 		_jump_inp_released = true
 	
 	# Gun stuff
-	weapon.check_fire(-_camera.global_basis.z, _camera.global_basis.y, "use_primary", "use_secondary")
+	weapon.check_fire(_camera.global_position, -_camera.global_basis.z, _camera.global_basis.y, "use_primary", "use_secondary")
 	
 	# Crouching
 	if _is_grounded and Input.is_action_pressed("crouch") and not _is_crouching:
@@ -329,6 +330,9 @@ func _handle_raycasts() -> void:
 		var obj := _rb.get_contact_collider_object(cidx)
 		var local_pos := to_local(_rb.get_contact_local_position(cidx))
 		var normal := _rb.get_contact_local_normal(cidx)
+		
+		if not is_instance_valid(obj):
+			continue
 		
 		var layer = obj.get("collision_layer")
 		if layer == null or layer & ground_layers == 0:

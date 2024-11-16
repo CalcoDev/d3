@@ -8,6 +8,7 @@ class BulletParams:
 	var faction: FactionComponent
 	var speed: float
 	
+	@warning_ignore("shadowed_variable")
 	func _init(p: Vector3, d: Vector3, f: FactionComponent, s: float, up_dir: Vector3) -> void:
 		self.position = p
 		self.direction = d
@@ -16,6 +17,7 @@ class BulletParams:
 		self.up_dir = up_dir
 
 @export_group("References")
+@export var use_fire_point: bool = false
 @export var fire_point_path: NodePath
 var _fire_point: Node3D = null
 
@@ -44,7 +46,7 @@ func _handle_on_fired(fire_params: Weapon.FireParams) -> void:
 	for i in bullet_count:
 		var bullet = bullet_prefab.instantiate()
 		assert("init_bullet" in bullet)
-		var t = _fire_point.global_position
+		var t = _fire_point.global_position if use_fire_point else fire_params.position
 		var d = _apply_spread(fire_params.direction, bullet_spread)
 		var bullet_params := BulletParams.new(t, d, faction, bullet_speed, fire_params.up_dir)
 		container.add_child(bullet)
