@@ -13,7 +13,7 @@ config_version=5
 config/name="d3"
 config/description="three d game lol"
 run/main_scene="res://scenes/lake.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 run/max_fps=240
 config/icon="res://icon.svg"
 
@@ -123,6 +123,8 @@ use_secondary={
 3d_physics/layer_1="Level Geometry"
 3d_physics/layer_2="Entities"
 3d_physics/layer_3="Objects"
+3d_physics/layer_4="Hitbox"
+3d_physics/layer_5="Hurtbox"
 
 [physics]
 
