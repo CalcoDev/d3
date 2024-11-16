@@ -22,17 +22,14 @@ func setup_faction(faction: FactionComponent) -> void:
 	
 func check_fire(direction: Vector3, up_dir: Vector3, primary_act: StringName, secondary_act: StringName) -> void:
 	# TODO(calco): Check stuff here
-# 	print(_use)
+	print(_use)
 	if not _use[1] or secondary_into_primary:
 		_check_fire(primary, primary_act, direction, up_dir)
 	if not _use[0] or primary_into_secondary:
 		_check_fire(secondary, secondary_act, direction, up_dir)
 
 func _check_fire(weapon: Weapon, input_action: StringName, direction: Vector3, up_dir: Vector3) -> void:
-	var s := 0
-	if weapon == secondary:
-		s = 1
-	_use[1-s] = false
+	var s := int(weapon == secondary)
 	
 	if weapon.instant:
 		if Input.is_action_pressed(input_action):
@@ -44,8 +41,11 @@ func _check_fire(weapon: Weapon, input_action: StringName, direction: Vector3, u
 		else:
 			_use[s] = false
 	else:
-		if Input.is_action_just_pressed(input_action):
-			_use[s] = weapon.start_charge()
+		if not weapon.is_charging:
+			if Input.is_action_just_pressed(input_action):
+				_use[s] = weapon.start_charge()
+			if weapon.hold_down and Input.is_action_pressed(input_action):
+				_use[s] = weapon.start_charge()
 		elif weapon.is_charging and not Input.is_action_pressed(input_action):
 			weapon.finish_charge(direction, up_dir)
 			_use[s] = false
@@ -54,6 +54,5 @@ func _check_fire(weapon: Weapon, input_action: StringName, direction: Vector3, u
 		else:
 			_use[s] = false
 	
-# 	if mark_as_finished:
-# 		_use[1-s] = false
-# 		if 1-s == 0 and not primary.instant
+	if _use[s]:
+		_use[1-s] = false

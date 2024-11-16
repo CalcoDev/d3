@@ -10,7 +10,6 @@
 script = ExtResource("1_575xl")
 primary = NodePath("ProjectileWeapon")
 secondary = NodePath("Weapon")
-primary_into_secondary = true
 
 [node name="WorldModel" type="Node3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
