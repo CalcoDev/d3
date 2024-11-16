@@ -1,10 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://cn66ixj52c1wx"]
+[gd_scene load_steps=5 format=3 uid="uid://cn66ixj52c1wx"]
 
+[ext_resource type="Script" path="res://scenes/prefabs/weapons/fbrvbr_gun/fbrvbr_gun.gd" id="1_575xl"]
 [ext_resource type="PackedScene" uid="uid://cojpl648216mr" path="res://assets/models/weapons/fbrvbr_gun/fbrvbr_grun.glb" id="1_ukmcq"]
+[ext_resource type="Script" path="res://scripts/weapons/projectile_weapon.gd" id="3_pkeub"]
+[ext_resource type="Script" path="res://scripts/weapons/weapon.gd" id="4_biycx"]
 
-[node name="FbrvbrGun" type="Node3D"]
+[node name="FbrvbrGun" type="Node3D" node_paths=PackedStringArray("primary", "secondary")]
+script = ExtResource("1_575xl")
+primary = NodePath("ProjectileWeapon")
+secondary = NodePath("Weapon")
 
 [node name="WorldModel" type="Node3D" parent="."]
 
 [node name="fbrvbr_grun" parent="WorldModel" instance=ExtResource("1_ukmcq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.203349, 0.124087, 0)
+
+[node name="ProjectileWeapon" type="Node" parent="."]
+script = ExtResource("3_pkeub")
+
+[node name="Weapon" type="Node" parent="."]
+script = ExtResource("4_biycx")

@@ -34,6 +34,22 @@ project/assembly_name="d3"
 
 enabled=PackedStringArray("res://addons/MonoBuildToggler/plugin.cfg", "res://addons/YarnSpinner-Godot/plugin.cfg", "res://addons/anthonyec.camera_preview/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://addons/": "gray",
+"res://assets/": "blue",
+"res://assets/art/": "teal",
+"res://resources/": "teal",
+"res://scenes/": "orange",
+"res://scenes/_debug/": "gray",
+"res://scenes/components/": "yellow",
+"res://scenes/prefabs/": "red",
+"res://scenes/utils/": "gray",
+"res://scenes/whiteboxing/": "gray",
+"res://scripts/": "red"
+}
+
 [filesystem]
 
 import/blender/enabled=false
@@ -41,6 +57,7 @@ import/blender/enabled=false
 [global_group]
 
 interactable="Denotes an interactable object."
+bullet_container=""
 
 [input]
 
@@ -89,6 +106,16 @@ _dbg_explode={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":76,"key_label":0,"unicode":108,"location":0,"echo":false,"script":null)
 ]
 }
+use_primary={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(240, 31),"global_position":Vector2(252, 90),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
+use_secondary={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":2,"position":Vector2(414, 34),"global_position":Vector2(426, 93),"factor":1.0,"button_index":2,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
 
 [layer_names]
 
@@ -96,6 +123,8 @@ _dbg_explode={
 3d_physics/layer_1="Level Geometry"
 3d_physics/layer_2="Entities"
 3d_physics/layer_3="Objects"
+3d_physics/layer_4="Hitbox"
+3d_physics/layer_5="Hurtbox"
 
 [physics]
 

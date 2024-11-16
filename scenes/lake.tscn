@@ -332,6 +332,8 @@ num_stairs = 6
 
 [node name="Interactables" type="Node3D" parent="."]
 
+[node name="BulletContainer" type="Node3D" parent="." groups=["bullet_container"]]
+
 [node name="Player" parent="." instance=ExtResource("2_rovfh")]
 physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.32669, 1.88565, -20.0724)

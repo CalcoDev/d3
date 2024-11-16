@@ -1,10 +1,12 @@
-[gd_scene load_steps=13 format=3 uid="uid://buyq0xaarcned"]
+[gd_scene load_steps=15 format=3 uid="uid://buyq0xaarcned"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/player.gd" id="1_ohpxq"]
 [ext_resource type="Script" path="res://scenes/components/interactions/interaction_raycast.gd" id="2_1u1xk"]
 [ext_resource type="Script" path="res://scripts/smooth_follow.gd" id="2_avi1u"]
 [ext_resource type="PackedScene" uid="uid://q7m5oaiqe3ca" path="res://scenes/characters/player/player_hud.tscn" id="2_givcc"]
 [ext_resource type="Script" path="res://scenes/components/interactions/player_interaction_component.gd" id="3_v7wrg"]
+[ext_resource type="PackedScene" uid="uid://bqhr2og3ba8k2" path="res://scenes/components/hitbox_component.tscn" id="6_pk8kf"]
+[ext_resource type="PackedScene" uid="uid://b2mfu65kd2vj1" path="res://scenes/components/basic_hitbox_responder.tscn" id="7_wyle8"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8ga75"]
 friction = 0.0
@@ -105,3 +107,8 @@ script = ExtResource("3_v7wrg")
 interaction_raycast = NodePath("../Orientation/HeadOriginalPosition/SmoothCamera/Camera3D/InteractionRaycast")
 
 [node name="PlayerHUD" parent="." instance=ExtResource("2_givcc")]
+
+[node name="HitboxComponent" parent="." instance=ExtResource("6_pk8kf")]
+default_responder = NodePath("../BasicHitboxResponder")
+
+[node name="BasicHitboxResponder" parent="." instance=ExtResource("7_wyle8")]
