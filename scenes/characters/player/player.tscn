@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://buyq0xaarcned"]
+[gd_scene load_steps=19 format=3 uid="uid://buyq0xaarcned"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/player.gd" id="1_ohpxq"]
 [ext_resource type="Script" path="res://scenes/components/interactions/interaction_raycast.gd" id="2_1u1xk"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scenes/components/interactions/player_interaction_component.gd" id="3_v7wrg"]
 [ext_resource type="PackedScene" uid="uid://cn66ixj52c1wx" path="res://scenes/prefabs/weapons/fbrvbr_gun/fbrvbr_gun.tscn" id="8_vlet0"]
 [ext_resource type="Script" path="res://scenes/components/hurtbox_component.gd" id="9_n2rgc"]
+[ext_resource type="Script" path="res://scenes/components/player_held_item.gd" id="10_1wnqa"]
 [ext_resource type="Script" path="res://scenes/components/health_component.gd" id="10_x24sc"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8ga75"]
@@ -116,7 +117,7 @@ follow_target = NodePath("../Head/CameraOffsetter/CameraMount")
 
 [node name="Camera3D" type="Camera3D" parent="Orientation/HeadOriginalPosition/SmoothCamera"]
 unique_name_in_owner = true
-cull_mask = 1048573
+cull_mask = 1048569
 current = true
 
 [node name="InteractionRaycast" type="RayCast3D" parent="Orientation/HeadOriginalPosition/SmoothCamera/Camera3D"]
@@ -131,5 +132,13 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.739093, -0.300357, -0.977098)
 
 [node name="FbrvbrGun" parent="." instance=ExtResource("8_vlet0")]
+
+[node name="PlayerHeldItem" type="Node3D" parent="FbrvbrGun" node_paths=PackedStringArray("player", "swayer")]
+script = ExtResource("10_1wnqa")
+player = NodePath("../..")
+swayer = NodePath("..")
+sway_amount = 0.2
+max_lag_amount = 0.4
+lag_amount = 0.05
 
 [node name="PlayerHUD" parent="." instance=ExtResource("2_givcc")]

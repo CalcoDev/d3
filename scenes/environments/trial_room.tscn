@@ -1,8 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://cidvnaxwhgvsl"]
+[gd_scene load_steps=12 format=3 uid="uid://cidvnaxwhgvsl"]
 
+[ext_resource type="Material" uid="uid://bcwpbl51ccl7u" path="res://assets/materials/travertine_mat.tres" id="1_5l26b"]
 [ext_resource type="Material" uid="uid://d258e5acpp8cr" path="res://assets/materials/tiles_mat.tres" id="1_j2j4n"]
+[ext_resource type="Material" uid="uid://dsmbr8eg1dd6k" path="res://assets/materials/wood_tw_mat.tres" id="2_dvwjj"]
 [ext_resource type="PackedScene" uid="uid://buyq0xaarcned" path="res://scenes/characters/player/player.tscn" id="2_i14rw"]
 [ext_resource type="Material" uid="uid://h3m0ro0f6j1b" path="res://assets/materials/bricks_mat.tres" id="2_ssp5r"]
+[ext_resource type="Material" uid="uid://6npitepe57rd" path="res://assets/materials/red_bricks_mat.tres" id="3_61ao5"]
 [ext_resource type="PackedScene" uid="uid://cym58huy6024l" path="res://scenes/utils/csg_stair_maker.tscn" id="3_gbbrf"]
 
 [sub_resource type="Curve" id="Curve_0k251"]
@@ -18,8 +21,8 @@ sky_material = SubResource("ProceduralSkyMaterial_33hgx")
 [sub_resource type="Environment" id="Environment_n8pio"]
 background_mode = 2
 sky = SubResource("Sky_2xdn8")
-ambient_light_source = 3
-reflected_light_source = 2
+ambient_light_source = 1
+reflected_light_source = 1
 
 [node name="TrialRoom" type="Node3D"]
 
@@ -27,9 +30,19 @@ reflected_light_source = 2
 
 [node name="Floor" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, -3.61453e-05, 0.00014039, 3.60916e-05, 1, 0.00029825, -0.000140403, -0.000298244, 1, -0.000561559, -0.501193, -10)
+material_override = ExtResource("1_5l26b")
 use_collision = true
 collision_mask = 0
 size = Vector3(30, 1, 50)
+material = ExtResource("1_j2j4n")
+
+[node name="Floor2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(1, -3.61453e-05, 0.00014039, 3.60916e-05, 1, 0.00029825, -0.000140403, -0.000298244, 1, -0.000891171, 8.61789, -10.0027)
+material_override = ExtResource("3_61ao5")
+use_collision = true
+collision_mask = 0
+flip_faces = true
+size = Vector3(43, 19.2382, 63.1133)
 material = ExtResource("1_j2j4n")
 
 [node name="Floor3" type="CSGBox3D" parent="Level"]
@@ -51,98 +64,168 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.5, 1)
 use_collision = true
 collision_mask = 0
 size = Vector3(8, 1, 2)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
 [node name="Floor5" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.5, 1.75)
 use_collision = true
 collision_mask = 0
 size = Vector3(8, 1, 0.5)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor8" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -6)
+[node name="Stand" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.45, -6)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.3, 2)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor9" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, -6.75)
+[node name="Stand2" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.95, -6.75)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.7, 0.5)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor10" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -12)
+[node name="Stand3" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.45, -12)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.3, 2)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor11" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, -12.75)
+[node name="Stand4" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.95, -12.75)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.7, 0.5)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor12" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -18)
+[node name="Stand5" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.45, -18)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.3, 2)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor13" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, -18.75)
+[node name="Stand6" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.95, -18.75)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.7, 0.5)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor14" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -24)
+[node name="Stand7" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.45, -24)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.3, 2)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor15" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, -24.75)
+[node name="Stand8" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.95, -24.75)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.7, 0.5)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor18" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -30)
+[node name="Stand9" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.45, -30)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.3, 2)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
-[node name="Floor19" type="CSGBox3D" parent="Level"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, -30.75)
+[node name="Stand10" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.95, -30.75)
 use_collision = true
 collision_mask = 0
 size = Vector3(22, 0.7, 0.5)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
+
+[node name="Stand11" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.488584, -6.00671)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.3, 2)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand12" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.988584, -6.75671)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.7, 0.5)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand13" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.488584, -12.0067)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.3, 2)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand14" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.988584, -12.7567)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.7, 0.5)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand15" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.488584, -18.0067)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.3, 2)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand16" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.988584, -18.7567)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.7, 0.5)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand17" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.488584, -24.0067)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.3, 2)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand18" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.988584, -24.7567)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.7, 0.5)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand19" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.488584, -30.0067)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.3, 2)
+material = ExtResource("2_dvwjj")
+
+[node name="Stand20" type="CSGBox3D" parent="Level"]
+transform = Transform3D(0.35, 0, 0, 0, 1, 0, 0, 0, 1, -7.03903, 0.988584, -30.7567)
+use_collision = true
+collision_mask = 0
+size = Vector3(22, 0.7, 0.5)
+material = ExtResource("2_dvwjj")
 
 [node name="Floor6" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.5, 1)
 use_collision = true
 collision_mask = 0
 size = Vector3(8, 1, 2)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
 [node name="Floor7" type="CSGBox3D" parent="Level"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.5, 1.75)
 use_collision = true
 collision_mask = 0
 size = Vector3(8, 1, 0.5)
-material = ExtResource("1_j2j4n")
+material = ExtResource("2_dvwjj")
 
 [node name="Wall5" type="CSGBox3D" parent="Level"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -1.09278e-07, 2, 12)
@@ -1170,14 +1253,97 @@ wall_jump_horiz_force = SubResource("Curve_0k251")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.999258, -0.0279369, 0.0265111, 0.0313125, -0.18852, 0.98157, -0.0224242, 0.981672, 0.189255, 0, 31, 0)
+visible = false
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_n8pio")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.11129, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.1113, -11)
+light_color = Color(0.945098, 0.882353, 0.894118, 1)
+omni_range = 132.795
+omni_attenuation = 0.1
+
+[node name="CinematicLights" type="Node3D" parent="."]
 visible = false
-omni_range = 4096.0
-omni_attenuation = -0.428
-omni_shadow_mode = 0
+
+[node name="MainSpotlight" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(0.999945, 0.010519, -8.37602e-06, -0.00388306, 0.369866, 0.929077, 0.00977606, -0.929026, 0.369887, 0.135272, 17.3556, 13.9588)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 22.5367
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125
+
+[node name="MainSpotlight2" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(-0.00257031, -0.682052, 0.7313, 0, 0.731302, 0.682054, -0.999997, 0.00175309, -0.00187967, 19.3195, 17.067, 1.98278)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 22.5367
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125
+
+[node name="MainSpotlight3" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(-0.00257019, -0.704686, 0.709515, 0, 0.709517, 0.704688, -0.999997, 0.00181118, -0.0018236, 19.3139, 17.067, -13.981)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 22.5367
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125
+
+[node name="MainSpotlight4" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(-0.00257019, -0.704686, 0.709515, 0, 0.709517, 0.704688, -0.999997, 0.00181118, -0.0018236, 19.2689, 17.067, -31.4807)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 22.5367
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125
+
+[node name="MainSpotlight5" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(0.00257112, 0.779929, -0.625863, 0, 0.625865, 0.779932, 0.999997, -0.00200529, 0.00160917, -20.2566, 17.067, -31.0405)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 22.5367
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125
+
+[node name="MainSpotlight6" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(0.00257112, 0.779929, -0.625863, 0, 0.625865, 0.779932, 0.999997, -0.00200529, 0.00160917, -20.2188, 17.067, -16.3271)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 22.5367
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125
+
+[node name="MainSpotlight7" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(0.00257112, 0.779929, -0.625863, 0, 0.625865, 0.779932, 0.999997, -0.00200529, 0.00160917, -20.1791, 17.067, -0.873078)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 22.5367
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125
+
+[node name="MainSpotlight8" type="SpotLight3D" parent="CinematicLights"]
+transform = Transform3D(-0.999915, 0.00510662, -0.0119988, 0, 0.920134, 0.391604, 0.0130403, 0.391571, -0.920056, 0.192946, 7.83512, -36.5222)
+light_color = Color(1, 0.870186, 0.745439, 1)
+light_energy = 1.98
+light_specular = 2.0
+spot_range = 50.6012
+spot_attenuation = 0.5
+spot_angle = 68.47
+spot_angle_attenuation = 0.125

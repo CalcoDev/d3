@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b6u0vv1l3g4uy"
+uid="uid://brkm2571vccos"
 path.s3tc="res://.godot/imported/fbrvbr_grun_fbrvbr_gun.png-888701978416544df1c34e2a5369ad93.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "575983f86df0a74f74957bca4fc863f9"
 }
 
 [deps]
