@@ -30,12 +30,12 @@ point_count = 3
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8pirq"]
 
-[sub_resource type="Sky" id="Sky_2xdn8"]
+[sub_resource type="Sky" id="Sky_mra22"]
 sky_material = SubResource("ProceduralSkyMaterial_8pirq")
 
 [sub_resource type="Environment" id="Environment_v7641"]
 background_mode = 2
-sky = SubResource("Sky_2xdn8")
+sky = SubResource("Sky_mra22")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dmxl6"]
 
@@ -282,6 +282,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.32669, 1.88565, -20.0724)
 continuous_cd = true
 look_sensitivity = 0.24
 max_slope_angle = 35.0
+accel = 45.0
+max_accel_force = 100.0
+air_accel = 27.0
+air_max_accel = 40.0
 _wall_jump_force = 10.0
 wall_jump_horiz_force = SubResource("Curve_kkw0t")
 
