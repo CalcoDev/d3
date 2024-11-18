@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cidvnaxwhgvsl"]
+[gd_scene load_steps=14 format=3 uid="uid://cidvnaxwhgvsl"]
 
 [ext_resource type="Material" uid="uid://bcwpbl51ccl7u" path="res://assets/materials/travertine_mat.tres" id="1_5l26b"]
 [ext_resource type="Material" uid="uid://d258e5acpp8cr" path="res://assets/materials/tiles_mat.tres" id="1_j2j4n"]
@@ -7,6 +7,8 @@
 [ext_resource type="Material" uid="uid://h3m0ro0f6j1b" path="res://assets/materials/bricks_mat.tres" id="2_ssp5r"]
 [ext_resource type="Material" uid="uid://6npitepe57rd" path="res://assets/materials/red_bricks_mat.tres" id="3_61ao5"]
 [ext_resource type="PackedScene" uid="uid://cym58huy6024l" path="res://scenes/utils/csg_stair_maker.tscn" id="3_gbbrf"]
+[ext_resource type="PackedScene" uid="uid://d1cll3px7owqo" path="res://assets/models/enemies/vulpes/vulpes.glb" id="8_vthrq"]
+[ext_resource type="PackedScene" uid="uid://bvrqioe5b3cy6" path="res://assets/models/fedor/fedor.glb" id="9_mgtfl"]
 
 [sub_resource type="Curve" id="Curve_0k251"]
 max_value = 2.0
@@ -1347,3 +1349,24 @@ spot_range = 50.6012
 spot_attenuation = 0.5
 spot_angle = 68.47
 spot_angle_attenuation = 0.125
+
+[node name="vulpes" parent="." instance=ExtResource("8_vthrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.31929, 0.000691414, -3.84017)
+
+[node name="vulpes2" parent="." instance=ExtResource("8_vthrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.58863, 0.000691414, -3.84017)
+
+[node name="fedor" parent="." instance=ExtResource("9_mgtfl")]
+transform = Transform3D(-0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 0.255059, 4, 12.4133)
+
+[node name="vulpes3" parent="." instance=ExtResource("8_vthrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7867, 4, 12.4689)
+
+[node name="vulpes4" parent="." instance=ExtResource("8_vthrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.55788, 4, 13.0748)
+
+[node name="vulpes5" parent="." instance=ExtResource("8_vthrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1174, 4, 12.9446)
+
+[node name="vulpes6" parent="." instance=ExtResource("8_vthrq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.809155, 4, 13.0086)

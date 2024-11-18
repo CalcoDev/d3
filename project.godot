@@ -13,8 +13,8 @@ config_version=5
 config/name="d3"
 config/description="three d game lol"
 run/main_scene="res://scenes/environments/trial_room.tscn"
-config/features=PackedStringArray("4.3", "C#", "Forward Plus")
-run/max_fps=60
+config/features=PackedStringArray("4.3", "Forward Plus")
+run/max_fps=240
 config/icon="res://icon.svg"
 
 [autoload]
@@ -23,11 +23,11 @@ Draw3d="res://scripts/utils/draw3d.gd"
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/viewport_width=384
+window/size/viewport_height=216
 window/size/window_width_override=1280
 window/size/window_height_override=720
-window/stretch/mode="canvas_items"
+window/stretch/mode="viewport"
 window/vsync/vsync_mode=0
 
 [dotnet]
